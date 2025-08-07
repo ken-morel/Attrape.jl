@@ -1,13 +1,19 @@
 name = "Attrape"
 uuid = "0d2ec124-4271-46df-8db6-477132e84622"
-authors = ["ken-morel <engonken8@gmail.com> and contributors"]
 version = "0.1.0"
+authors = ["ken-morel <engonken8@gmail.com> and contributors"]
 
 [deps]
 Atak = "ea1fb407-d168-472b-9d3b-6f44c48cad5b"
 Efus = "9109e250-8bcb-41d8-9faa-e136e3e06a79"
 Mousetrap = "5deeb4b9-6e04-4da7-8b7f-c77fb1eae65e"
 libmousetrap_jll = "287f9a42-973b-50d0-ae32-9952e735a47d"
+
+[sources]
+Atak = {path = "../Atak.jl"}
+Efus = {path = "../Efus.jl"}
+Mousetrap = {rev = "main", url = "https://github.com/clemapfel/mousetrap.jl"}
+libmousetrap_jll = {rev = "main", url = "https://github.com/clemapfel/mousetrap_jll"}
 
 [compat]
 Mousetrap = "0.3.1"
