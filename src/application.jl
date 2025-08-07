@@ -1,22 +1,23 @@
 mutable struct AppParams
 end
 
-Base.@kwdef mutable struct Application
+Base.@kwdef mutable struct Application <: AbstractApplication
     id::String
-    store::Union{Namespace, Nothing}
+    store::Union{Namespace, Nothing} = nothing
     mousetrap::Mousetrap.Application
+    toplevel::Union{Window, Nothing} = nothing
+    home::Union{PageRoute, AbstractPage}
 end
 
-function application(id::String)
-    app = Application(;
-        id, store = nothing,
+function application(id::String; home::Union{PageRoute, AbstractPage})
+    return Application(;
+        id, home,
         mousetrap = Mousetrap.Application(id),
     )
-    return app
 end
 
 function init!(app::Application)
-    connect_signal_activate!(app.mousetrap) do mousetrap::Mousetrap.Application
+    Mousetrap.connect_signal_activate!(app.mousetrap) do ::Mousetrap.Application
         try
             mount!(app)
         catch exception
@@ -24,7 +25,7 @@ function init!(app::Application)
             printstyled(stderr, "In Attrape: "; bold = true)
             Base.showerror(stderr, exception, catch_backtrace())
             print(stderr, "\n")
-            quit!(app)
+            Mousetrap.quit!(app)
         end
         return nothing
     end
@@ -32,14 +33,17 @@ function init!(app::Application)
 end
 
 function mount!(app::Application)
-    window = Window(app.mousetrap)
-    set_child!(window, Label("Hello Attrape!"))
-    return present!(window)
+    app.toplevel = createwindow(app)
+    push!(app.toplevel.router, app.home)
+    println("just pushed")
+    return present!(app.toplevel)
+    # set_child!(window, Label("Hello Attrape!"))
+    # return present!(window)
 end
 
 
 function run(app::Application)
     init!(app)
-    run!(app.mousetrap)
+    Mousetrap.run!(app.mousetrap)
     return 0
 end
