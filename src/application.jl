@@ -6,10 +6,10 @@ Base.@kwdef mutable struct Application <: AbstractApplication
     store::Union{Namespace, Nothing} = nothing
     mousetrap::Mousetrap.Application
     toplevel::Union{Window, Nothing} = nothing
-    home::Union{PageRoute, AbstractPage}
+    home::Union{PageRoute, Nothing}
 end
 
-function application(id::String; home::Union{PageRoute, AbstractPage})
+function application(id::String; home::Union{PageRoute, Nothing})
     return Application(;
         id, home,
         mousetrap = Mousetrap.Application(id),

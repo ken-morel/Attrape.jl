@@ -1,7 +1,5 @@
 abstract type AbstractPage end
 
-const PageBuilder = Function
-
 struct PageBuildContext
     app::AbstractApplication
     window::AbstractWindow
@@ -16,6 +14,36 @@ end
 isrebuildable(::BuilderPage) = false
 
 render(b::BuilderPage, ctx::PageBuildContext) = b.builder(ctx)
+
+Base.@kwdef struct ComponentPage <: AbstractPage
+    component::AbstractComponent
+    namespage::AbstractNamespace
+    builder::Union{Function, Nothing}
+end
+
+
+struct PageBuilder
+    init::Function
+    code::Efus.ECode
+end
+function build(builder::PageBuilder, ctx::PageBuildContext; args...)
+    namespace = Efus.DictNamespace(ctx.app.namespace)
+    builder.init(namespace, ctx, args)
+    evalctx = EfusEvalContext(namespace)
+    component = eval!(evalctx, builder.code)
+    if iserror(component)
+        println(Efus.format(component))
+        throw(component)
+    end
+    if ctx.onmount isa Function
+        ctx.onmount(component)
+    end
+    return ComponentPage(;
+        component,
+        namespace,
+        builder = (newctx) -> build(builder, newctx; args...)
+    )
+end
 
 
 function Base.push!(
