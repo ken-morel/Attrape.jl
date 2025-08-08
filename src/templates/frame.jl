@@ -8,7 +8,7 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     outlet = if isnothing(c[:box])
         frame
     else
-        box = Mousetrap.Box(mousetraporientation(something(c[:orient], EOrient(:vertical))))
+        box = Mousetrap.Box(something(c[:orient], Mousetrap.ORIENTATION_VERTICAL))
         Mousetrap.set_child!(frame, box)
         box
     end
@@ -44,6 +44,6 @@ const Frame = Efus.EfusTemplate(
     FrameBackend,
     Efus.TemplateParameter[
         :label => String,
-        :box => EOrient,
+        :box => Mousetrap.detail._Orientation,
     ]
 )

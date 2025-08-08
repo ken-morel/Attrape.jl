@@ -18,6 +18,6 @@ end
 function childgeometry!(parent::AttrapeComponent, child::AttrapeComponent)
     isnothing(parent.mount) && return
     isnothing(child.mount) && return
-    @warn "Child geometry not implemented on " typeof(parent)
+    Mousetrap.push_back!(parent.mount.widget, child.mount.widget)
     return
 end
