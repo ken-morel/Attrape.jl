@@ -1,7 +1,3 @@
-struct PageRoute
-    fn::Function
-end
-const Route = Union{PageRoute, Function}
 struct Router
     stack::Vector{AbstractPage}
     observable::Efus.EObservable

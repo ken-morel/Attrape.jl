@@ -1,18 +1,17 @@
-mutable struct AppParams
-end
-
 Base.@kwdef mutable struct Application <: AbstractApplication
-    id::String
+    const id::String
+    const mousetrap::Mousetrap.Application
+    const home::Union{PageBuilder, Nothing}
+    const namespace::AbstractNamespace
     store::Union{Namespace, Nothing} = nothing
-    mousetrap::Mousetrap.Application
     toplevel::Union{Window, Nothing} = nothing
-    home::Union{PageRoute, Nothing}
 end
 
-function application(id::String; home::Union{PageRoute, Nothing})
+function application(id::String; home::Union{PageBuilder, Nothing})
     return Application(;
         id, home,
         mousetrap = Mousetrap.Application(id),
+        namespace = DictNamespace()
     )
 end
 
@@ -25,7 +24,7 @@ function init!(app::Application)
             printstyled(stderr, "In Attrape: "; bold = true)
             Base.showerror(stderr, exception, catch_backtrace())
             print(stderr, "\n")
-            Mousetrap.quit!(app)
+            Mousetrap.quit!(app.mousetrap)
         end
         return nothing
     end
@@ -34,8 +33,8 @@ end
 
 function mount!(app::Application)
     app.toplevel = createwindow(app)
-    push!(app.toplevel.router, app.home)
-    println("just pushed")
+    ctx = PageContext(app, app.toplevel)
+    push!(app.toplevel.router, build(app.home, ctx))
     return present!(app.toplevel)
     # set_child!(window, Label("Hello Attrape!"))
     # return present!(window)

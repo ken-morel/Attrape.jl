@@ -1,36 +1,49 @@
 abstract type AbstractPage end
+abstract type AbstractPageBuilder end
 
-struct PageBuildContext
+struct PageContext
     app::AbstractApplication
     window::AbstractWindow
     onmount::Union{Function, Nothing}
-    PageBuildContext(app::AbstractApplication, win::AbstractWindow) = new(app, win, nothing)
+    PageContext(app::AbstractApplication, win::AbstractWindow) = new(app, win, nothing)
 end
 
 
-struct BuilderPage <: AbstractPage
+struct RawPage <: AbstractPage
     builder::Function
+    ctx::PageContext
+    args::NamedTuple
 end
-isrebuildable(::BuilderPage) = false
+isrebuildable(::RawPage) = true
+render(p::RawPage) = p.builder(p.ctx, p.args)
 
-render(b::BuilderPage, ctx::PageBuildContext) = b.builder(ctx)
+struct RawBuilder <: AbstractPageBuilder
+    fn::Function
+end
+build(b::RawBuilder, c::PageContext; args...) = RawPage(b.fn, c, args)
 
-Base.@kwdef struct ComponentPage <: AbstractPage
+
+Base.@kwdef struct ViewPage <: AbstractPage
     component::AbstractComponent
-    namespage::AbstractNamespace
+    namespace::AbstractNamespace
     builder::Union{Function, Nothing}
 end
 
+function render(page::ViewPage)
+    mount = Efus.mount!(page.component)
+    return mount.widget
+end
 
-struct PageBuilder
+
+struct View <: AbstractPageBuilder
     init::Function
     code::Efus.ECode
 end
-function build(builder::PageBuilder, ctx::PageBuildContext; args...)
+function build(view::View, ctx::PageContext; args...)
     namespace = Efus.DictNamespace(ctx.app.namespace)
-    builder.init(namespace, ctx, args)
+    view.init(namespace, ctx, args)
     evalctx = EfusEvalContext(namespace)
-    component = eval!(evalctx, builder.code)
+    component = eval!(evalctx, view.code)
     if iserror(component)
         println(Efus.format(component))
         throw(component)
@@ -38,40 +51,17 @@ function build(builder::PageBuilder, ctx::PageBuildContext; args...)
     if ctx.onmount isa Function
         ctx.onmount(component)
     end
-    return ComponentPage(;
+    return ViewPage(;
         component,
         namespace,
-        builder = (newctx) -> build(builder, newctx; args...)
+        builder = (newctx) -> build(view, newctx; args...)
     )
 end
 
+const PageRoute = Function
+build(f::PageRoute, c::PageContext; a...) = f(c, a)
 
-function Base.push!(
-        ctx::PageBuildContext, builder::PageBuilder;
-        args...,  # just to be explicit, builder is also a Function
-    )
-    page = builder(ctx)
-    if isnothing(page.builder)
-        page.builder = builder
-        page.rebuildable = true
-    end
-    return if !Efus.iserror(page)
-        push!(ctx.window.router, page; args...)
-    else
-        Efus.display(page)
-        throw(page)
-    end
-end
-Base.push!(builder::Function, ctx::PageBuildContext; args...) =
-    push!(ctx, builder; args...)
 
-function Base.push!(
-        ctx::PageBuildContext, page::AbstractPage;
-        args...,  # just to be explicit, builder is also a Function
-    )
-    return push!(ctx.window.router, page; args...)
-end
+const PageBuilder = Union{View, PageRoute}
 
-function Base.pop!(ctx::PageBuildContext; args...)
-    return pop!(ctx.window.router; args...)
-end
+route(f::Function)::PageRoute = f

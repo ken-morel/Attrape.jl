@@ -6,24 +6,30 @@ end
 
 
 function createwindow(app::AbstractApplication)
-    route = router(app.home)
-    win = Window(app, Mousetrap.Window(app.mousetrap), route)
-    # update!(win)
-    println("subscribing")
-    Efus.subscribe!(route, nothing) do _
-        println("updated router, updating window")
+    r = router()
+    win = Window(app, Mousetrap.Window(app.mousetrap), r)
+    Efus.subscribe!(r, nothing) do _
         update!(win)
     end
+
+    if !isnothing(app.home)
+        ctx = PageContext(win.app, win)
+        page = build(app.home, ctx)
+        push!(r, page; replace = true)
+    else
+        update!(win)
+    end
+
     return win
 end
 
 function update!(win::Window)
-    ctx = PageBuildContext(win.app, win)
+    ctx = PageContext(win.app, win)
     page = getcurrentpage(win.router)
     return if isnothing(page)
         Mousetrap.set_child!(win.mousetrap, nothing)
     else
-        widget = render(page, ctx)
+        widget = render(page)
         Mousetrap.set_child!(win.mousetrap, widget)
     end
 end

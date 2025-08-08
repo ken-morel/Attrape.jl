@@ -4,20 +4,17 @@ using .Attrape
 using Efus
 import Mousetrap
 
-Page = PageBuilder(
+const HelloWorldView = View(
     efus"""
     using Attrape
 
     Frame
     """
-) do nmsp::AbstractNamespace, ctx::PageBuildContext, args::NamedTuple
+) do nmsp, ctx, args
 end
-
 function (@main)(::Vector{String})
     app = application(
-        "test"; home = PageRoute() do
-            Page
-        end
+        "com.test"; home = HelloWorldView
     )
     return Attrape.run(app)
 end
