@@ -39,6 +39,10 @@ struct View <: AbstractPageBuilder
     init::Function
     code::Efus.ECode
 end
+function view(init::Function, code::Union{Efus.ECode, Efus.AbstractEfusError})
+    iserror(code) && (Efus.display(code); error(code))
+    return View(init, code)
+end
 function build(view::View, ctx::PageContext; args...)
     namespace = Efus.DictNamespace(ctx.app.namespace)
     view.init(namespace, ctx, args)
@@ -62,6 +66,6 @@ const PageRoute = Function
 build(f::PageRoute, c::PageContext; a...) = f(c, a)
 
 
-const PageBuilder = Union{View, PageRoute}
+const PageBuilder = Union{AbstractPageBuilder, PageRoute}
 
 route(f::Function)::PageRoute = f

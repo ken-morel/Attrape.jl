@@ -18,7 +18,7 @@ end
 function init!(app::Application)
     Mousetrap.connect_signal_activate!(app.mousetrap) do ::Mousetrap.Application
         try
-            mount!(app)
+            Efus.mount!(app)
         catch exception
             printstyled(stderr, "[ERROR] "; bold = true, color = :red)
             printstyled(stderr, "In Attrape: "; bold = true)
@@ -31,7 +31,7 @@ function init!(app::Application)
     return
 end
 
-function mount!(app::Application)
+function Efus.mount!(app::Application)
     app.toplevel = createwindow(app)
     ctx = PageContext(app, app.toplevel)
     push!(app.toplevel.router, build(app.home, ctx))

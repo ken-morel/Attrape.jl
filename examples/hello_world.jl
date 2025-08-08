@@ -4,11 +4,13 @@ using .Attrape
 using Efus
 import Mousetrap
 
-const HelloWorldView = View(
+const HelloWorldView = Attrape.view(
     efus"""
     using Attrape
 
-    Frame
+    Frame label="A beautiful frame" box=v
+      Label text="Hello world"
+      Label text="Hello world"
     """
 ) do nmsp, ctx, args
 end
