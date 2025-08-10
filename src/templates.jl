@@ -8,6 +8,7 @@ include("templates/button.jl")
 include("templates/togglebutton.jl")
 include("templates/checkbutton.jl")
 include("templates/switch.jl")
+include("templates/spinbutton.jl")
 
 function eregister()
     registertemplate.(

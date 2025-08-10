@@ -2,7 +2,7 @@ struct LabelBackend <: AttrapeBackend end
 
 function Efus.mount!(c::Efus.Component{LabelBackend})::AttrapeMount
     println("Set child", isnothing(c.parent))
-    label = Mousetrap.Label(something(c[:text], ":-("))
+    label = Mousetrap.Label(c[:text]::String)
     c[:justify] isa Mousetrap.JustifyMode && Mousetrap.set_justify_mode!(label, c[:justify])
     c[:wrap] isa Mousetrap.LabelWrapMode && Mousetrap.set_wrap_mode!(label, c[:wrap])
     c[:ellipsize] isa Mousetrap.EllipsizeMode && Mousetrap.set_ellipsize_mode!(label, c[:ellipsize])

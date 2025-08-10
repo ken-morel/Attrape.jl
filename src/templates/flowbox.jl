@@ -1,7 +1,7 @@
 struct FlowBoxBackend <: AttrapeBackend end
 
 function Efus.mount!(c::Efus.Component{FlowBoxBackend})::AttrapeMount
-    box = Mousetrap.FlowBox(something(c[:orient], Mousetrap.ORIENTATION_VERTICAL))
+    box = Mousetrap.FlowBox(c[:orient]::Mousetrap.detail._Orientation)
     processcommonargs!(c, box)
     c[:spacing] isa Integer && Mousetrap.set_spacing!(box, c[:spacing])
     c.mount = SimpleMount(box)
@@ -15,7 +15,7 @@ const FlowBox = Efus.EfusTemplate(
     :FlowBox,
     FlowBoxBackend,
     Efus.TemplateParameter[
-        :orient! => Mousetrap.detail._Orientation,
+        :orient => Mousetrap.detail._Orientation => Mousetrap.ORIENTATION_VERTICAL,
         :spacing => Integer,
     ]
 )
