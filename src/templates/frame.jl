@@ -14,6 +14,7 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     end
     c.mount = SimpleMount(frame, outlet)
     processcommonargs!(c, frame)
+    isnothing(c.parent) || childgeometry!(c.parent, c)
     if outlet === frame
         if length(c.children) >= 1
             mount!(last(c.children))
@@ -25,7 +26,6 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     else
         mount!.(c.children)
     end
-
     return c.mount
 end
 

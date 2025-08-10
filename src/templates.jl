@@ -23,6 +23,7 @@ function eregister()
             ToggleButton,
             CheckButton,
             Switch,
+            SpinButton,
         ]
     )
     return

@@ -6,10 +6,10 @@ using Atak.Store
 
 import Mousetrap
 
-export application, run, Page, view, PageContext, PageRoute, route
-
+export application, Page, PageContext, PageRoute, route, View, run!
 
 abstract type AbstractWindow end
+
 include("bridge.jl")
 include("page.jl")
 const Page = AbstractPage

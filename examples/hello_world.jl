@@ -4,8 +4,8 @@ using .Attrape
 using Efus
 import Mousetrap
 
-const HelloWorldView = Attrape.view(
-    efus"""
+const HelloWorldView = View(
+    efusthrow"""
     using Attrape
 
     Frame label="A beautiful frame" box=v
@@ -15,8 +15,9 @@ const HelloWorldView = Attrape.view(
 ) do nmsp, ctx, args
 end
 function (@main)(::Vector{String})
-    app = application(
-        "com.test"; home = HelloWorldView
+    return run!(
+        application(
+            "com.test"; home = HelloWorldView
+        )
     )
-    return Attrape.run(app)
 end

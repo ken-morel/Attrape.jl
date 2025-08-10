@@ -38,10 +38,10 @@ end
 struct View <: AbstractPageBuilder
     init::Function
     code::Efus.ECode
-end
-function view(init::Function, code::Union{Efus.ECode, Efus.AbstractEfusError})
-    iserror(code) && (Efus.display(code); error(code))
-    return View(init, code)
+    function View(init::Function, code::Union{Efus.ECode, Efus.AbstractEfusError})
+        iserror(code) && (Efus.display(code); error(code))
+        return new(init, code)
+    end
 end
 function build(view::View, ctx::PageContext; args...)
     namespace = Efus.DictNamespace(ctx.app.namespace)

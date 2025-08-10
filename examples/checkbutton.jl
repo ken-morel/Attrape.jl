@@ -4,8 +4,8 @@ using .Attrape
 using Efus
 import Mousetrap
 
-const Page = Attrape.view(
-    efus"""
+const Page = View(
+    efusthrow"""
     using Attrape
 
     Frame label="Toggle button test" box=v
@@ -20,8 +20,9 @@ const Page = Attrape.view(
     end
 end
 function (@main)(::Vector{String})
-    app = application(
-        "com.test"; home = Page
+    return run!(
+        application(
+            "com.test"; home = Page
+        )
     )
-    return Attrape.run(app)
 end

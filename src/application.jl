@@ -41,7 +41,7 @@ function Efus.mount!(app::Application)
 end
 
 
-function run(app::Application)
+function run!(app::Application)
     init!(app)
     Mousetrap.run!(app.mousetrap)
     return 0

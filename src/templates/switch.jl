@@ -6,8 +6,8 @@ function Efus.mount!(c::Efus.Component{SwitchBackend})::AttrapeMount
     c[:switched] isa Function && Mousetrap.connect_signal_switched!(btn, c[:switched])
     c.mount = SimpleSyncingMount(btn)
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
-        Mousetrap.set_is_active!(btn, getvalue(c[:bind]))
-        Mousetrap.connect_signal_toggled!(btn) do self::Mousetrap.Switch
+        Mousetrap.set_is_active!(btn, getvalue(r))
+        Mousetrap.connect_signal_switched!(btn) do self::Mousetrap.Switch
             c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideMousetrap
             try

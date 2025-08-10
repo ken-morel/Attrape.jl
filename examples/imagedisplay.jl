@@ -4,8 +4,8 @@ using .Attrape
 using Efus
 import Mousetrap
 
-const Page = Attrape.view(
-    efus"""
+const Page = View(
+    efusthrow"""
     using Attrape
 
     Frame label="Image test" box=v
@@ -13,11 +13,11 @@ const Page = Attrape.view(
     """
 ) do nmsp, ctx, args
     nmsp[:path] = joinpath(@__DIR__, "nadia-logo.jpg")
-
 end
 function (@main)(::Vector{String})
-    app = application(
-        "com.test"; home = Page
+    return run!(
+        application(
+            "com.test"; home = Page
+        )
     )
-    return Attrape.run(app)
 end
