@@ -1,4 +1,4 @@
-Base.@kwdef mutable struct Application <: AbstractApplication
+Base.@kwdef mutable struct Application <: Atak.Application
     const id::String
     const mousetrap::Mousetrap.Application
     const home::Union{PageBuilder, Nothing}

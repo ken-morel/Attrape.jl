@@ -1,11 +1,11 @@
 Base.@kwdef struct Window <: AbstractWindow
-    app::AbstractApplication
+    app::Atak.Application
     mousetrap::Mousetrap.Window
     router::Router
 end
 
 
-function createwindow(app::AbstractApplication)
+function createwindow(app::Atak.Application)
     r = router()
     win = Window(app, Mousetrap.Window(app.mousetrap), r)
     Efus.subscribe!(r, nothing) do _
@@ -24,7 +24,6 @@ function createwindow(app::AbstractApplication)
 end
 
 function update!(win::Window)
-    ctx = PageContext(win.app, win)
     page = getcurrentpage(win.router)
     return if isnothing(page)
         Mousetrap.set_child!(win.mousetrap, nothing)

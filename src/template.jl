@@ -10,6 +10,15 @@ struct SimpleMount <: AttrapeMount
     SimpleMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o)
 end
 
+@enum _UpdateSide _UpdateSideNone _UpdateSideMousetrap _UpdateSideAttrape
+mutable struct SimpleSyncingMount <: AttrapeMount
+    const widget::Mousetrap.Widget
+    const outlet::Mousetrap.Widget
+    updateside::_UpdateSide
+    SimpleSyncingMount(w::Mousetrap.Widget) = new(w, w, _UpdateSideNone)
+    SimpleSyncingMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o, _UpdateSideNone)
+end
+
 const COMMON_ARGS = []
 
 function processcommonargs!(::AttrapeComponent, ::Mousetrap.Widget)

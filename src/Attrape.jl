@@ -6,10 +6,8 @@ using Atak.Store
 
 import Mousetrap
 
-export application, run, view, PageContext, PageRoute, route
+export application, run, Page, view, PageContext, PageRoute, route
 
-
-abstract type AbstractApplication end
 
 abstract type AbstractWindow end
 include("bridge.jl")

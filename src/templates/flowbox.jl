@@ -12,8 +12,8 @@ end
 
 
 const FlowBox = Efus.EfusTemplate(
-    :Box,
-    BoxBackend,
+    :FlowBox,
+    FlowBoxBackend,
     Efus.TemplateParameter[
         :orient! => Mousetrap.detail._Orientation,
         :spacing => Integer,

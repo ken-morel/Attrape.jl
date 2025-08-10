@@ -2,10 +2,10 @@ abstract type AbstractPage end
 abstract type AbstractPageBuilder end
 
 struct PageContext
-    app::AbstractApplication
+    app::Atak.Application
     window::AbstractWindow
     onmount::Union{Function, Nothing}
-    PageContext(app::AbstractApplication, win::AbstractWindow) = new(app, win, nothing)
+    PageContext(app::Atak.Application, win::AbstractWindow) = new(app, win, nothing)
 end
 
 
