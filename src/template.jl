@@ -30,3 +30,11 @@ function childgeometry!(parent::AttrapeComponent, child::AttrapeComponent)
     Mousetrap.push_back!(parent.mount.widget, child.mount.widget)
     return
 end
+
+function errorincallback(e::Exception)
+    printstyled(stderr, "[ERROR] "; bold = true, color = :red)
+    printstyled(stderr, "In Attrape callback: "; bold = true)
+    Base.showerror(stderr, e, catch_backtrace())
+    return print(stderr, "\n")
+
+end

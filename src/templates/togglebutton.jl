@@ -9,18 +9,29 @@ function Efus.mount!(c::Efus.Component{ToggleButtonBackend})::AttrapeMount
     c[:circular] isa Bool && Mousetrap.set_is_circular!(btn, c[:circular])
     c.mount = SimpleSyncingMount(btn)
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
+        Mousetrap.set_is_active!(btn, getvalue!(c[:bind]))
         Mousetrap.connect_signal_toggled!(btn) do self::Mousetrap.ToggleButton
-            c.mount.updateside === _UpdateSideAttrape && return
+            c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideMousetrap
-            notify!(r, Mousetrap.get_is_active(self))
-            c.mount.updateside = _UpdateSideNone
+            try
+                notify!(r, Mousetrap.get_is_active(self))
+            catch e
+                errorincallback(e)
+            finally
+                c.mount.updateside = _UpdateSideNone
+            end
             return
         end
         subscribe!(r, nothing) do ::Nothing, val::Bool
-            c.mount.updateside === _UpdateSideMousetrap && return
+            c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideAttrape
-            Mousetrap.set_is_active!(btn, val)
-            c.mount.updateside = _UpdateSideNone
+            try
+                Mousetrap.set_is_active!(btn, val)
+            catch e
+                errorincallback(e)
+            finally
+                c.mount.updateside = _UpdateSideNone
+            end
         end
     end
     isnothing(c.parent) || childgeometry!(c.parent, c)
