@@ -8,26 +8,14 @@ function Efus.mount!(c::Efus.Component{CheckButtonBackend})::AttrapeMount
     c[:bind] isa Efus.AbstractReactant{CheckButtonState} && let r = c[:bind]
         set_state!(btn, getvalue(r))
         connect_signal_toggled!(btn) do self::Mousetrap.CheckButton
-            c.mount.updateside !== _UpdateSideNone && return
-            c.mount.updateside = _UpdateSideMousetrap
-            try
+            halfduplex!(c.mount, false) do
                 notify!(r, get_state(self))
-            catch e
-                errorincallback(e)
-            finally
-                c.mount.updateside = _UpdateSideNone
             end
             return
         end
         subscribe!(r, nothing) do val::CheckButtonState
-            c.mount.updateside !== _UpdateSideNone && return
-            c.mount.updateside = _UpdateSideAttrape
-            try
+            halfduplex!(c.mount, true) do
                 set_state!(btn, val)
-            catch e
-                errorincallback(e)
-            finally
-                c.mount.updateside = _UpdateSideNone
             end
         end
     end

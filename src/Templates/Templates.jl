@@ -16,13 +16,44 @@ struct SimpleMount <: AttrapeMount
     SimpleMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o)
 end
 
-@enum _UpdateSide _UpdateSideNone _UpdateSideMousetrap _UpdateSideAttrape
 mutable struct SimpleSyncingMount <: AttrapeMount
     const widget::Mousetrap.Widget
     const outlet::Mousetrap.Widget
-    updateside::_UpdateSide
-    SimpleSyncingMount(w::Mousetrap.Widget) = new(w, w, _UpdateSideNone)
-    SimpleSyncingMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o, _UpdateSideNone)
+    sync::Int8
+    SimpleSyncingMount(w::Mousetrap.Widget) = new(w, w, zero(Int8))
+    SimpleSyncingMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o, zero(Int8))
+end
+
+"""
+    function update!(fn::Function, m::SimpleSyncingMount, s::_UpdateSide)
+
+This permits update on both side to occur, even several updates in the same
+direction simultaneously, but not both sides at the same time.
+`attrape` tells if it is attrape side updating mousetrap or opposite else.
+"""
+function halfduplex!(fn::Function, m::SimpleSyncingMount, attrape::Bool)  # attrape => true, mousetrap => false
+    if attrape
+        m.sync < 0 && return # othr side updating
+        m.sync += 1
+        try
+            fn()
+        catch e
+            errorincallback(e)
+        finally
+            m.sync -= 1
+        end
+    else
+        m.sync > 0 && return # othr side updating
+        m.sync -= 1
+        try
+            fn()
+        catch e
+            errorincallback(e)
+        finally
+            m.sync += 1
+        end
+    end
+    return
 end
 
 const COMMON_ARGS = []

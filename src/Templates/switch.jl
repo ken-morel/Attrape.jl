@@ -8,26 +8,14 @@ function Efus.mount!(c::Efus.Component{SwitchBackend})::AttrapeMount
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
         set_is_active!(btn, getvalue(r))
         connect_signal_switched!(btn) do self::Mousetrap.Switch
-            c.mount.updateside !== _UpdateSideNone && return
-            c.mount.updateside = _UpdateSideMousetrap
-            try
+            halfduplex!(c.mount, false) do
                 notify!(r, get_is_active(self))
-            catch e
-                errorincallback(e)
-            finally
-                c.mount.updateside = _UpdateSideNone
             end
             return
         end
-        subscribe!(r, nothing) do ::Nothing, val::Bool
-            c.mount.updateside !== _UpdateSideNone && return
-            c.mount.updateside = _UpdateSideAttrape
-            try
+        subscribe!(r, nothing) do val::Bool
+            halfduplex!(c.mount, true) do
                 set_is_active!(btn, val)
-            catch e
-                errorincallback(e)
-            finally
-                c.mount.updateside = _UpdateSideNone
             end
         end
     end

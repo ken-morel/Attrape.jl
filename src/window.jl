@@ -8,7 +8,7 @@ end
 function createwindow(app::Atak.Application)
     r = router()
     win = Window(app, Mousetrap.Window(app.mousetrap), r)
-    Efus.subscribe!(r, nothing) do _
+    Efus.subscribe!(r, nothing) do
         update!(win)
     end
 
