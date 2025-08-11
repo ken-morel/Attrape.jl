@@ -5,6 +5,12 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     c[:label] isa String && Mousetrap.set_label_widget!(
         frame, Mousetrap.Label(c[:label])
     )
+    c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
+        Mousetrap.set_margin_bottom!(frame, m.bottom)
+        Mousetrap.set_margin_top!(frame, m.top)
+        Mousetrap.set_margin_start!(frame, m.left)
+        Mousetrap.set_margin_end!(frame, m.right)
+    end
     outlet = if isnothing(c[:box])
         frame
     else
@@ -45,5 +51,6 @@ const Frame = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :label => String,
         :box => Mousetrap.detail._Orientation,
+        :margin => Efus.EEdgeInsets{Number, nothing},
     ]
 )
