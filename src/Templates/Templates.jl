@@ -57,6 +57,7 @@ include("togglebutton.jl")
 include("checkbutton.jl")
 include("switch.jl")
 include("spinbutton.jl")
+include("scale.jl")
 
 function eregister()
     registertemplate.(
@@ -72,6 +73,7 @@ function eregister()
             CheckButton,
             Switch,
             SpinButton,
+            Scale,
         ]
     )
     return
