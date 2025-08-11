@@ -62,6 +62,7 @@ include("scale.jl")
 include("levelbar.jl")
 include("progressbar.jl")
 include("spinner.jl")
+include("entry.jl")
 
 function eregister()
     registertemplate.(
@@ -81,6 +82,7 @@ function eregister()
             LevelBar,
             ProgressBar,
             Spinner,
+            Entry,
         ]
     )
     return
