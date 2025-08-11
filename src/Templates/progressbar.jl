@@ -9,10 +9,10 @@ function Efus.mount!(c::Efus.Component{ProgressBarBackend})
         txt isa AbstractString && Mousetrap.set_text!(scl, txt)
     end
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
-        Mousetrap.set_value!(scl, getvalue(r))
+        Mousetrap.set_fraction!(scl, getvalue(r))
         subscribe!(r, nothing) do ::Nothing, val::Real
             try
-                Mousetrap.set_value!(scl, val)
+                Mousetrap.set_fraction!(scl, val)
             catch e
                 errorincallback(e)
             end

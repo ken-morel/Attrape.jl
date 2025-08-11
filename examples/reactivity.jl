@@ -9,7 +9,7 @@ const valfrac = EReactant{Float32}(12 / 100) # keep in [0, 1]
 
 sync!(
     value => v -> v / 100, # convert to [0, 1]
-    valfrac => nothing # valuefrac never updates
+    valfrac => v -> v * 100, # valuefrac never updates
 ) # syncing valuefrac to value
 
 const home = StaticPage(
@@ -23,6 +23,7 @@ const home = StaticPage(
       Scale bind=(value)
       Label text="level"
       LevelBar bind=(value)
+      Label text="Progress"
       ProgressBar bind=(valfrac) text=true
     """Main # important, specify the module or namespace $value is taken from
 )
