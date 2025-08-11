@@ -18,6 +18,18 @@ function Base.push!(
     return page
 end
 
+function Base.push!(
+        ctx::PageContext, builder_or_page::Union{AbstractPage, PageBuilder};
+        replace::Bool = false, clear::Bool = false, notify::Bool = true
+    )::AbstractPage
+    page::AbstractPage = if builder_or_page isa PageBuilder
+        build(builder_or_page, ctx)
+    else
+        builder_or_page
+    end
+    return push!(ctx.window.router, page; replace, clear, notify)
+end
+
 function Base.pop!(r::Router; notify::Bool = true)::Union{AbstractPage, Nothing}
     length(r.stack) == 0 && return nothing
     poped = pop!(r.stack)

@@ -8,13 +8,14 @@ struct PageContext
     PageContext(app::Atak.Application, win::AbstractWindow) = new(app, win, nothing)
 end
 
+#### Raw Page
 
 struct RawPage <: AbstractPage
     builder::Function
     ctx::PageContext
-    args::NamedTuple
+    args::Base.Pairs
 end
-isrebuildable(::RawPage) = true
+isrebuildable(::RawPage) = false
 render(p::RawPage) = p.builder(p.ctx, p.args)
 
 struct RawBuilder <: AbstractPageBuilder
@@ -22,6 +23,18 @@ struct RawBuilder <: AbstractPageBuilder
 end
 build(b::RawBuilder, c::PageContext; args...) = RawPage(b.fn, c, args)
 
+#### Static Page
+
+struct StaticPage <: AbstractPage
+    comp::AbstractComponent
+    StaticPage(comp::AbstractComponent) = new(comp)
+    StaticPage(e::Efus.AbstractEfusError) = (Efus.display(e); throw(e))
+end
+
+isrebuildable(::StaticPage) = false
+render(p::StaticPage) = mount!(p.comp).widget
+
+#### View page
 
 Base.@kwdef struct ViewPage <: AbstractPage
     component::AbstractComponent

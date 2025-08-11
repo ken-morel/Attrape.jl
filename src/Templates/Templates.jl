@@ -1,3 +1,9 @@
+module Templates
+
+using Efus
+using Mousetrap
+
+
 abstract type AttrapeBackend <: Efus.TemplateBackend end
 abstract type AttrapeMount <: Efus.AbstractMount end
 
@@ -36,5 +42,44 @@ function errorincallback(e::Exception)
     printstyled(stderr, "In Attrape callback: "; bold = true)
     Base.showerror(stderr, e, catch_backtrace())
     return print(stderr, "\n")
+
+end
+
+
+include("frame.jl")
+include("label.jl")
+include("box.jl")
+include("flowbox.jl")
+include("separator.jl")
+include("imagedisplay.jl")
+include("button.jl")
+include("togglebutton.jl")
+include("checkbutton.jl")
+include("switch.jl")
+include("spinbutton.jl")
+
+function eregister()
+    registertemplate.(
+        (:Attrape,), [
+            Frame,
+            Label,
+            Box,
+            FlowBox,
+            Separator,
+            ImageDisplay,
+            Button,
+            ToggleButton,
+            CheckButton,
+            Switch,
+            SpinButton,
+        ]
+    )
+    return
+end
+
+function __init__()
+    eregister()
+    return
+end
 
 end

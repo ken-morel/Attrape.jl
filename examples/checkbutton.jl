@@ -22,7 +22,7 @@ end
 function (@main)(::Vector{String})
     return run!(
         application(
-            "com.test"; home = Page
+            home = Page
         )
     )
 end

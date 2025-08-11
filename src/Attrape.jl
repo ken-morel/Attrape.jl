@@ -6,7 +6,7 @@ using Atak.Store
 
 import Mousetrap
 
-export application, Page, PageContext, PageRoute, route, View, run!
+export application, Page, PageContext, PageRoute, route, View, run!, StaticPage
 
 abstract type AbstractWindow end
 
@@ -18,11 +18,9 @@ include("window.jl")
 
 include("application.jl")
 
-include("template.jl")
-include("templates.jl")
+include("Templates/Templates.jl")
 
 function __init__()
-    eregister()
     return
 end
 

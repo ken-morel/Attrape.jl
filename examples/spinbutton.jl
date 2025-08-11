@@ -9,12 +9,8 @@ Page = View(
     using Attrape
 
     Box orient=v
-      Label text=("" *
-      "Sorry for the latency, \
-      <tt>@async</tt> and <tt>@spawn</tt> \
-      did not work yet<small>...</small>"
-      )
-      for x in 1:20
+      Label text="Sorry for the latency, <tt>@async</tt> issues"
+      for x in 1:15
         Frame box=h
           Label text=("Spinbutton $x")
           SpinButton bind=(val)
@@ -25,5 +21,5 @@ Page = View(
 end
 
 function (@main)(::Vector{String})
-    return run!(application("com.test", home = Page))
+    return run!(application(home = Page))
 end

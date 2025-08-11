@@ -12,15 +12,12 @@ function createwindow(app::Atak.Application)
         update!(win)
     end
 
-    if !isnothing(app.home)
-        ctx = PageContext(win.app, win)
-        page = build(app.home, ctx)
-        push!(r, page; replace = true)
-    else
-        update!(win)
-    end
-
     return win
+end
+
+createwindow(f::Function, a::Atak.Application) = let w = createwindow(a)
+    push!(w.router, f(PageContext(a, w)))
+    w
 end
 
 function update!(win::Window)
