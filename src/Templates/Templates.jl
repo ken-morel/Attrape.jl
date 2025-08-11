@@ -41,7 +41,8 @@ function errorincallback(e::Exception)
     printstyled(stderr, "[ERROR] "; bold = true, color = :red)
     printstyled(stderr, "In Attrape callback: "; bold = true)
     Base.showerror(stderr, e, catch_backtrace())
-    return print(stderr, "\n")
+    print(stderr, "\n")
+    return
 
 end
 
@@ -60,6 +61,7 @@ include("spinbutton.jl")
 include("scale.jl")
 include("levelbar.jl")
 include("progressbar.jl")
+include("spinner.jl")
 
 function eregister()
     registertemplate.(
@@ -78,6 +80,7 @@ function eregister()
             Scale,
             LevelBar,
             ProgressBar,
+            Spinner,
         ]
     )
     return

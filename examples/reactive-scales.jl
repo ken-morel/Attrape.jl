@@ -7,11 +7,6 @@ using .Attrape: run!, application, StaticPage
 const value = EReactant{Real}(12)
 const valfrac = EReactant{Float32}(12 / 100) # keep in [0, 1]
 
-sync!(
-    value => v -> v / 100, # convert to [0, 1]
-    valfrac => v -> v * 100, # valuefrac never updates
-) # syncing valuefrac to value
-
 const home = StaticPage(
     efuspreeval"""
     using Attrape
@@ -28,4 +23,10 @@ const home = StaticPage(
     """Main # important, specify the module or namespace $value is taken from
 )
 
-(@main)(_) = run!(application(; home))
+(@main)(_) = (
+    sync!(
+        value => v -> v / 100, # convert to [0, 1]
+        valfrac => nothing, # valuefrac never updates
+    ); # syncing valuefrac to value
+    run!(application(; home))
+)
