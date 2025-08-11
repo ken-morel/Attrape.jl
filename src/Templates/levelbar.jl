@@ -5,10 +5,10 @@ function Efus.mount!(c::Efus.Component{LevelBarBackend})
     processcommonargs!(c, scl)
     c.mount = SimpleMount(scl)
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
-        Mousetrap.set_value!(scl, getvalue(r))
-        subscribe!(r, nothing) do ::Nothing, val::Real
+        set_value!(scl, getvalue(r))
+        subscribe!(r, nothing) do val::Real
             try
-                Mousetrap.set_value!(scl, val)
+                set_value!(scl, val)
             catch e
                 errorincallback(e)
             end

@@ -3,11 +3,11 @@ struct SpinButtonBackend <: AttrapeBackend end
 function Efus.mount!(c::Efus.Component{SpinButtonBackend})
     rng = Mousetrap.SpinButton(c[:range]::UnitRange{<:Integer})
     processcommonargs!(c, rng)
-    Mousetrap.set_orientation!(rng, c[:orient])
+    set_orientation!(rng, c[:orient])
     c.mount = SimpleSyncingMount(rng)
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
-        Mousetrap.set_value!(rng, getvalue(r))
-        Mousetrap.connect_signal_value_changed!(rng) do self::Mousetrap.SpinButton
+        set_value!(rng, getvalue(r))
+        connect_signal_value_changed!(rng) do self::Mousetrap.SpinButton
             c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideMousetrap
             try
@@ -19,11 +19,11 @@ function Efus.mount!(c::Efus.Component{SpinButtonBackend})
             end
             return
         end
-        subscribe!(r, nothing) do ::Nothing, val::Real
+        subscribe!(r, nothing) do val::Real
             c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideAttrape
             try
-                Mousetrap.set_value!(rng, val)
+                set_value!(rng, val)
             catch e
                 errorincallback(e)
             finally
@@ -40,7 +40,7 @@ const SpinButton = Efus.EfusTemplate(
     SpinButtonBackend,
     Efus.TemplateParameter[
         :range => UnitRange{<:Integer} => 0:100,
-        :orient => Mousetrap.detail._Orientation => Mousetrap.ORIENTATION_HORIZONTAL,
+        :orient => Mousetrap.detail._Orientation => ORIENTATION_HORIZONTAL,
         :bind => Efus.AbstractReactant{<:Real},
         :changed => Function,
     ]

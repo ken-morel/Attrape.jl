@@ -2,20 +2,20 @@ struct FrameBackend <: AttrapeBackend end
 
 function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     frame = Mousetrap.Frame()
-    c[:label] isa String && Mousetrap.set_label_widget!(
-        frame, Mousetrap.Label(c[:label])
+    c[:label] isa String && set_label_widget!(
+        frame, Label(c[:label])
     )
     c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
-        Mousetrap.set_margin_bottom!(frame, m.bottom)
-        Mousetrap.set_margin_top!(frame, m.top)
-        Mousetrap.set_margin_start!(frame, m.left)
-        Mousetrap.set_margin_end!(frame, m.right)
+        set_margin_bottom!(frame, m.bottom)
+        set_margin_top!(frame, m.top)
+        set_margin_start!(frame, m.left)
+        set_margin_end!(frame, m.right)
     end
     outlet = if isnothing(c[:box])
         frame
     else
-        box = Mousetrap.Box(something(c[:orient], Mousetrap.ORIENTATION_VERTICAL))
-        Mousetrap.set_child!(frame, box)
+        box = Mousetrap.Box(something(c[:orient], ORIENTATION_VERTICAL))
+        set_child!(frame, box)
         box
     end
     c.mount = SimpleMount(frame, outlet)
@@ -38,9 +38,9 @@ end
 function childgeometry!(frm::Efus.Component{FrameBackend}, child::AttrapeComponent)
     isnothing(frm.mount) && return
     if frm.mount.outlet == frm.mount.widget
-        Mousetrap.set_child!(frm.mount.widget, child.mount.widget)
+        set_child!(frm.mount.widget, child.mount.widget)
     else
-        Mousetrap.push_back!(frm.mount.outlet, child.mount.widget)
+        push_back!(frm.mount.outlet, child.mount.widget)
     end
     return
 end

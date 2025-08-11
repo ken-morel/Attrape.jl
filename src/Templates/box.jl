@@ -3,7 +3,7 @@ struct BoxBackend <: AttrapeBackend end
 function Efus.mount!(c::Efus.Component{BoxBackend})::AttrapeMount
     box = Mousetrap.Box(c[:orient]::Mousetrap.detail._Orientation)
     processcommonargs!(c, box)
-    c[:spacing] isa Integer && Mousetrap.set_spacing!(box, c[:spacing])
+    c[:spacing] isa Integer && set_spacing!(box, c[:spacing])
     c.mount = SimpleMount(box)
     isnothing(c.parent) || childgeometry!(c.parent, c)
     mount!.(c.children)

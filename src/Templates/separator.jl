@@ -3,12 +3,12 @@ struct SeparatorBackend <: AttrapeBackend end
 function Efus.mount!(c::Efus.Component{SeparatorBackend})::AttrapeMount
     sep = Mousetrap.Separator()
     processcommonargs!(c, sep)
-    c[:margin] isa Integer && Mousetrap.set_margin!(sep, c[:margin])
+    c[:margin] isa Integer && set_margin!(sep, c[:margin])
     c[:expand] isa EOrient && let e = c[:expand]
         v = e ∈ [:both, :vertical]
         h = e ∈ [:both, :horizontal]
-        Mousetrap.set_expand_vertically!(sep, v)
-        Mousetrap.set_expand_horizontally!(sep, h)
+        set_expand_vertically!(sep, v)
+        set_expand_horizontally!(sep, h)
     end
     c.mount = SimpleMount(sep)
     isnothing(c.parent) || childgeometry!(c.parent, c)

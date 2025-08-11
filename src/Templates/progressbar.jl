@@ -5,14 +5,14 @@ function Efus.mount!(c::Efus.Component{ProgressBarBackend})
     processcommonargs!(c, scl)
     c.mount = SimpleMount(scl)
     c[:text] isa Union{Bool, AbstractString} && let txt = c[:text]
-        Mousetrap.set_show_text!(scl, true)
-        txt isa AbstractString && Mousetrap.set_text!(scl, txt)
+        set_show_text!(scl, true)
+        txt isa AbstractString && set_text!(scl, txt)
     end
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
-        Mousetrap.set_fraction!(scl, getvalue(r))
-        subscribe!(r, nothing) do ::Nothing, val::Real
+        set_fraction!(scl, getvalue(r))
+        subscribe!(r, nothing) do val::Real
             try
-                Mousetrap.set_fraction!(scl, val)
+                set_fraction!(scl, val)
             catch e
                 errorincallback(e)
             end

@@ -3,15 +3,15 @@ mutable struct CheckButtonBackend <: AttrapeBackend end
 function Efus.mount!(c::Efus.Component{CheckButtonBackend})::AttrapeMount
     btn = Mousetrap.CheckButton()
     processcommonargs!(c, btn)
-    c[:toggled] isa Function && Mousetrap.connect_signal_toggled!(btn, c[:toggled])
+    c[:toggled] isa Function && connect_signal_toggled!(btn, c[:toggled])
     c.mount = SimpleSyncingMount(btn)
-    c[:bind] isa Efus.AbstractReactant{Mousetrap.CheckButtonState} && let r = c[:bind]
-        Mousetrap.set_state!(btn, getvalue(r))
-        Mousetrap.connect_signal_toggled!(btn) do self::Mousetrap.CheckButton
+    c[:bind] isa Efus.AbstractReactant{CheckButtonState} && let r = c[:bind]
+        set_state!(btn, getvalue(r))
+        connect_signal_toggled!(btn) do self::Mousetrap.CheckButton
             c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideMousetrap
             try
-                notify!(r, Mousetrap.get_state(self))
+                notify!(r, get_state(self))
             catch e
                 errorincallback(e)
             finally
@@ -19,11 +19,11 @@ function Efus.mount!(c::Efus.Component{CheckButtonBackend})::AttrapeMount
             end
             return
         end
-        subscribe!(r, nothing) do ::Nothing, val::Mousetrap.CheckButtonState
+        subscribe!(r, nothing) do val::CheckButtonState
             c.mount.updateside !== _UpdateSideNone && return
             c.mount.updateside = _UpdateSideAttrape
             try
-                Mousetrap.set_state!(btn, val)
+                set_state!(btn, val)
             catch e
                 errorincallback(e)
             finally
@@ -37,7 +37,7 @@ end
 
 function childgeometry!(frm::Efus.Component{CheckButtonBackend}, child::AttrapeComponent)
     isnothing(frm.mount) && return
-    Mousetrap.set_child!(frm.mount.widget, child.mount.widget)
+    set_child!(frm.mount.widget, child.mount.widget)
     return
 end
 
@@ -46,6 +46,6 @@ const CheckButton = Efus.EfusTemplate(
     CheckButtonBackend,
     Efus.TemplateParameter[
         :toggled => Function,
-        :bind => Efus.AbstractReactant{Mousetrap.CheckButtonState},
+        :bind => Efus.AbstractReactant{CheckButtonState},
     ]
 )
