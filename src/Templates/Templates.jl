@@ -94,6 +94,8 @@ include("levelbar.jl")
 include("progressbar.jl")
 include("spinner.jl")
 include("entry.jl")
+include("textview.jl")
+include("dropdown.jl")
 
 function eregister()
     registertemplate.(
@@ -114,6 +116,8 @@ function eregister()
             ProgressBar,
             Spinner,
             Entry,
+            Textview,
+            Dropdown,
         ]
     )
     return

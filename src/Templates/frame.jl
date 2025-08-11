@@ -3,7 +3,7 @@ struct FrameBackend <: AttrapeBackend end
 function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     frame = Mousetrap.Frame()
     c[:label] isa String && set_label_widget!(
-        frame, Label(c[:label])
+        frame, Mousetrap.Label(c[:label])
     )
     c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
         set_margin_bottom!(frame, m.bottom)
@@ -26,7 +26,7 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
             mount!(last(c.children))
             length(c.children) > 1 && @warn(
                 "Frame widget received more than one child.",
-                " only the last was rendered"
+                " only the last was mounted."
             )
         end
     else
