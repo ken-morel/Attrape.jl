@@ -96,6 +96,7 @@ include("spinner.jl")
 include("entry.jl")
 include("textview.jl")
 include("dropdown.jl")
+include("expander.jl")
 
 function eregister()
     registertemplate.(
@@ -118,6 +119,7 @@ function eregister()
             Entry,
             Textview,
             Dropdown,
+            Expander,
         ]
     )
     return
