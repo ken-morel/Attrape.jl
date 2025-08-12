@@ -1,6 +1,6 @@
-struct DropdownBackend <: AttrapeBackend end
+struct DropDownBackend <: AttrapeBackend end
 
-const Dropdown = Component{DropdownBackend}
+const DropDown = Component{DropDownBackend}
 
 function Efus.mount!(c::DropDown)
     drop = Mousetrap.DropDown()
@@ -31,12 +31,12 @@ function Efus.mount!(c::DropDown)
 end
 
 
-const dropdown = Efus.EfusTemplate(
-    :Dropdown,
-    DropdownBackend,
+const dropDown = Efus.EfusTemplate(
+    :DropDown,
+    DropDownBackend,
     Efus.TemplateParameter[
         :choices! => Dict{Any, AbstractString},
-        :bind => Efus.AbstractReactant{<:Real},
+        :bind => Efus.AbstractReactant{<:Any},
         COMMON_ARGS...,
     ]
 )

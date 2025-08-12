@@ -4,9 +4,9 @@ const Checkbutton = Component{CheckbuttonBackend}
 
 function Efus.mount!(c::CheckButton)
     btn = Mousetrap.CheckButton()
+    c.mount = SimpleSyncingMount(btn)
     processcommonargs!(c, btn)
     c[:toggled] isa Function && connect_signal_toggled!(btn, c[:toggled])
-    c.mount = SimpleSyncingMount(btn)
     c[:bind] isa Efus.AbstractReactant{CheckButtonState} && let r = c[:bind]
         set_state!(btn, getvalue(r))
         connect_signal_toggled!(btn) do self::Mousetrap.CheckButton
@@ -24,6 +24,7 @@ function Efus.mount!(c::CheckButton)
     isnothing(c.parent) || childgeometry!(c.parent, c)
     return c.mount
 end
+
 
 function childgeometry!(frm::Checkbutton, child::AttrapeComponent)
     isnothing(frm.mount) && return

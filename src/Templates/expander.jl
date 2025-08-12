@@ -32,6 +32,16 @@ function Efus.mount!(c::Expander)
     return c.mount
 end
 
+function Efus.update!(c::Expander)
+    return updateutil!(c) do name, value
+        if name === :label
+            set_label_widget!(c.mount.widget, Label(value::AbstractString))
+        else
+            missing
+        end
+    end
+end
+
 function childgeometry!(frm::Efus.Component{ExpanderBackend}, child::AttrapeComponent)
     isnothing(frm.mount) && return
     if frm.mount.outlet == frm.mount.widget

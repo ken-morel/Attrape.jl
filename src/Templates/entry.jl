@@ -29,6 +29,20 @@ function Efus.mount!(c::Entry)
     return c.mount
 end
 
+function Efus.update!(c::Entry)
+    return updateutil!(c) do name, value
+        entry = c.mount.widget
+        if name === :width
+            set_max_width_chars!(entry, value::Real)
+        elseif name === :password
+            set_text_visible!(entry, !value::Bool)
+        elseif name === :text
+            set_text!(entry, !value::AbstractString)
+        else
+            missing
+        end
+    end
+end
 
 const entry = EfusTemplate(
     :Entry,
@@ -36,7 +50,7 @@ const entry = EfusTemplate(
     Efus.TemplateParameter[
         :changed => Function,
         :activated => Function,
-        :bind => Efus.AbstractReactant,
+        :bind => Efus.AbstractReactant{<:AbstractString},
         :password => Bool,
         :width => Integer,
         COMMON_ARGS...,

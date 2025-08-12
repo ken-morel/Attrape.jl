@@ -13,6 +13,22 @@ function Efus.mount!(c::Label)::AttrapeMount
     return c.mount
 end
 
+
+function Efus.update!(c::Label)
+    return updateutil!(c) do name, value
+        label = c.mount.widget
+        if name === :wrap
+            set_wrap_mode!(label, value::LabelWrapMode)
+        elseif name === :justify
+            set_justify_mode!(label, value::JustifyMode)
+        elseif name === :ellipsize
+            set_ellipsize_mode!(label, value::EllipsizeMode)
+        else
+            missing
+        end
+    end
+end
+
 const label = Efus.EfusTemplate(
     :Label,
     LabelBackend,

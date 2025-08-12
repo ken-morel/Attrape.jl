@@ -61,21 +61,50 @@ const COMMON_ARGS = Pair{Symbol, Type}[
     :expand => Efus.EOrient,
 ]
 
+function setmargin!(w::Widget, m::EEdgeInsets)
+    set_margin_bottom!(w, m.bottom)
+    set_margin_top!(w, m.top)
+    set_margin_start!(w, m.left)
+    set_margin_end!(w, m.right)
+    return
+end
+function setexpand!(w::Widget, e::EOrient)
+    v = e ∈ [:both, :vertical]
+    h = e ∈ [:both, :horizontal]
+    set_expand_vertically!(w, v)
+    return set_expand_horizontally!(w, h)
+end
+
 function processcommonargs!(c::AttrapeComponent, w::Mousetrap.Widget)
-    c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
-        set_margin_bottom!(w, m.bottom)
-        set_margin_top!(w, m.top)
-        set_margin_start!(w, m.left)
-        set_margin_end!(w, m.right)
-    end
-    c[:expand] isa EOrient && let e = c[:expand]
-        v = e ∈ [:both, :vertical]
-        h = e ∈ [:both, :horizontal]
-        set_expand_vertically!(sep, v)
-        set_expand_horizontally!(sep, h)
+    c[:margin] isa EEdgeInsets && setmargin!(w, c[:margin])
+    c[:expand] isa EOrient && setexpand!(w, c[:expand])
+    return
+end
+function updateutil!(fn::Function, c::AttrapeComponent)
+    isnothing(c.mount) && return
+    w = c.mount.widget
+    for name in c.dirty
+        if name === :margin
+            c[:margin] isa EEdgeInsets && setmargin!(w, c[:margin])
+        elseif name == :expand
+            c[:expand] isa EOrient && setexpand!(w, c[:expand])
+        else
+            ismissing(fn(name, c[name])) && @warn(
+                "Changed immutable attribute",
+                name,
+                " of component of type",
+                typeof(c),
+            )
+        end
     end
     return
 end
+function Efus.update!(c::AttrapeComponent)
+    return updateutil!(c) do _, _
+        missing
+    end
+end
+
 
 function childgeometry!(parent::AttrapeComponent, child::AttrapeComponent)
     isnothing(parent.mount) && return
@@ -122,7 +151,7 @@ function eregister()
             frame,
             label,
             box,
-            flowbox,
+            flowBox,
             separator,
             imageDisplay,
             button,
@@ -136,7 +165,7 @@ function eregister()
             spinner,
             entry,
             textView,
-            dropdown,
+            dropDown,
             expander,
             adjustment,
             gridView,

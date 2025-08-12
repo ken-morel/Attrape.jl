@@ -10,6 +10,7 @@ function Efus.mount!(c::ToggleButton)::AttrapeMount
     c[:toggled] isa Function && connect_signal_toggled!(btn, c[:toggled])
     c[:frame] isa Bool && set_has_frame!(btn, c[:frame])
     c[:circular] isa Bool && set_is_circular!(btn, c[:circular])
+    c[:active] isa Bool && set_is_active!(btn, c[:active])
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
         set_is_active!(btn, getvalue(r))
         connect_signal_toggled!(btn) do self::Mousetrap.ToggleButton
@@ -28,6 +29,22 @@ function Efus.mount!(c::ToggleButton)::AttrapeMount
     return c.mount
 end
 
+
+function Efus.update!(c::ToggleButton)
+    return updateutil!(c) do name, value
+        btn = c.mount.widget
+        if name === :frame
+            set_has_frame!(btn, value::Bool)
+        elseif name === :circular
+            set_is_circular!(btn, value::Bool)
+        elseif name === :active
+            set_is_active!(btn, value::Bool)
+        else
+            missing
+        end
+    end
+end
+
 function childgeometry!(frm::ToggleButton, child::AttrapeComponent)
     isnothing(frm.mount) && return
     set_child!(frm.mount.widget, child.mount.widget)
@@ -43,6 +60,7 @@ const toggleButton = Efus.EfusTemplate(
         :frame => Bool,
         :circular => Bool,
         :bind => Efus.AbstractReactant{Bool},
+        :active => Bool,
         COMMON_ARGS...,
     ]
 )

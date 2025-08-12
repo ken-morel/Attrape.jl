@@ -20,6 +20,7 @@ function Efus.mount!(c::LevelBar)
     return c.mount
 end
 
+
 const levelBar = Efus.EfusTemplate(
     :LevelBar,
     LevelBarBackend,

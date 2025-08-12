@@ -37,6 +37,18 @@ function Efus.mount!(c::Frame)::AttrapeMount
     return c.mount
 end
 
+
+function Efus.update!(c::Frame)
+    return updateutil!(c) do name, value
+        frame = c.mount.widget
+        if name === :label
+            set_label_widget!(frame, Label(value))
+        else
+            missing
+        end
+    end
+end
+
 function childgeometry!(frm::Frame, child::AttrapeComponent)
     isnothing(frm.mount) && return
     if frm.mount.outlet == frm.mount.widget

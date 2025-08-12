@@ -28,6 +28,16 @@ function Efus.mount!(c::Adjustment)
     return c.mount
 end
 
+function Efus.update!(c::Adjustment)
+    return updateutil!(c) do name, value
+        if name === :value
+            set_value!(c.mount, value)
+        else
+            missing
+        end
+    end
+end
+
 const adjustment = Efus.EfusTemplate(
     :Adjustment,
     AdjustmentBackend,

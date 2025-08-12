@@ -13,6 +13,18 @@ function Efus.mount!(c::Button)
     return c.mount
 end
 
+function Efus.update!(c::Button)
+    return updateutil!(c) do name, value
+        if name === :frame
+            set_has_frame!(c.mount.widget, value)
+        elseif name === :circular
+            set_is_circular!(c.mount.widget, value)
+        else
+            missing
+        end
+    end
+end
+
 const button = EfusTemplate(
     :Button,
     ButtonBackend,

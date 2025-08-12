@@ -11,6 +11,17 @@ function Efus.mount!(c::Box)
     return c.mount
 end
 
+
+function Efus.update!(c::Box)
+    return updateutil!(c) do name, value
+        if name === :orient
+            set_orientation!(c.mount, value)
+        else
+            missing
+        end
+    end
+end
+
 const box = EfusTemplate(
     :Box,
     BoxBackend,

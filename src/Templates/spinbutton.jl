@@ -25,6 +25,17 @@ function Efus.mount!(c::SpinButton)
     return c.mount
 end
 
+
+function Efus.update!(c::Button)
+    return updateutil!(c) do name, value
+        if name === :orient
+            set_orientation!(c.mount.widget, value)
+        else
+            missing
+        end
+    end
+end
+
 const spinButton = EfusTemplate(
     :SpinButton,
     SpinButtonBackend,

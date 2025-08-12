@@ -12,8 +12,13 @@ function Efus.mount!(c::Spinner)
 end
 
 function Efus.update!(c::Spinner)
-    set_is_spinning!(c.mount.widget, c[:spinning]::Bool)
-    return
+    return updateutil!(c) do name, value
+        if name === :spinning
+            set_is_spinning!(c.mount.widget, value::Bool)
+        else
+            missing
+        end
+    end
 end
 
 const spinner = Efus.EfusTemplate(
