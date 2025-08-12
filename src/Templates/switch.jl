@@ -4,9 +4,9 @@ const Switch = Component{SwitchBackend}
 
 function Efus.mount!(c::Switch)
     btn = Mousetrap.Switch()
+    c.mount = SimpleSyncingMount(btn)
     processcommonargs!(c, btn)
     c[:switched] isa Function && connect_signal_switched!(btn, c[:switched])
-    c.mount = SimpleSyncingMount(btn)
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
         set_is_active!(btn, getvalue(r))
         connect_signal_switched!(btn) do self::Mousetrap.Switch
@@ -37,5 +37,6 @@ const switch = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :switched => Function,
         :bind => Efus.AbstractReactant{Bool},
+        COMMON_ARGS...,
     ]
 )

@@ -37,6 +37,7 @@ const adjustment = Efus.EfusTemplate(
         :bind => Efus.AbstractReactant{<:Real},
         :changed => Function,
         :propschanged => Function,
+        COMMON_ARGS...,
     ]
 )
 

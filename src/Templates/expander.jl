@@ -7,12 +7,7 @@ function Efus.mount!(c::Expander)
     c[:label] isa AbstractString && set_label_widget!(
         frame, Mousetrap.Label(c[:label])
     )
-    c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
-        set_margin_bottom!(frame, m.bottom)
-        set_margin_top!(frame, m.top)
-        set_margin_start!(frame, m.left)
-        set_margin_end!(frame, m.right)
-    end
+
     outlet = if isnothing(c[:box])
         frame
     else
@@ -53,6 +48,6 @@ const expander = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :label => String,
         :box => Mousetrap.detail._Orientation,
-        :margin => Efus.EEdgeInsets{Number, nothing},
+        COMMON_ARGS...,
     ]
 )

@@ -5,12 +5,12 @@ const Entry = Efus.Component{EntryBackend}
 function Efus.mount!(c::Entry)
     entry = Mousetrap.Entry()
     c.mount = SimpleSyncingMount(entry)
+    processcommonargs!(c, entry)
     c[:changed] isa Function && connect_signal_text_changed!(c[:changed], entry)
     c[:activated] isa Function && connect_signal_activate!(c[:activated], entry)
     c[:width] isa Integer && set_max_width_chars!(entry, c[:width])
     c[:password] isa Bool && set_text_visible!(entry, !c[:password])
     c[:text] isa AbstractString && set_text!(entry, c[:text])
-    processcommonargs!(c, entry)
     c[:bind] isa Efus.AbstractReactant && let r = c[:bind]
         set_text!(entry, getvalue(r))
         connect_signal_text_changed!(entry) do ::Mousetrap.Entry
@@ -39,6 +39,7 @@ const entry = EfusTemplate(
         :bind => Efus.AbstractReactant,
         :password => Bool,
         :width => Integer,
+        COMMON_ARGS...,
     ]
 
 )

@@ -19,5 +19,6 @@ const flowbox = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :orient => Mousetrap.detail._Orientation => ORIENTATION_VERTICAL,
         :spacing => Real,
+        COMMON_ARGS...,
     ]
 )

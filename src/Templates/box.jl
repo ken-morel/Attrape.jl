@@ -17,5 +17,6 @@ const box = EfusTemplate(
     Efus.TemplateParameter[
         :orient => Mousetrap.detail._Orientation => Mousetrap.ORIENTATION_VERTICAL,
         :spacing => Integer,
+        COMMON_ARGS...,
     ]
 )

@@ -37,5 +37,6 @@ const dropdown = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :choices! => Dict{Any, AbstractString},
         :bind => Efus.AbstractReactant{<:Real},
+        COMMON_ARGS...,
     ]
 )

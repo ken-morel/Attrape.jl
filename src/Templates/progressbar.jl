@@ -30,5 +30,6 @@ const progressBar = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :bind => Efus.AbstractReactant{<:Real},
         :text => Union{Bool, AbstractString},
+        COMMON_ARGS...,
     ]
 )

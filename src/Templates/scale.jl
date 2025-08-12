@@ -4,9 +4,9 @@ const Scale = Efus.Component{ScaleBackend}
 
 function Efus.mount!(c::Scale)
     scl = Mousetrap.Scale(c[:range]::UnitRange{<:Integer})
-    processcommonargs!(c, scl)
-    set_orientation!(scl, c[:orient])
     c.mount = SimpleSyncingMount(scl)
+    processcommonargs!(c, scl)
+    set_orientation!(scl, c[:orient]::Mousetrap.detail._Orientation)
     c[:drawvalue] isa Bool && set_should_draw_value!(scl, c[:drawvalue])
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
         set_value!(scl, getvalue(r))
@@ -35,6 +35,7 @@ const scale = Efus.EfusTemplate(
         :bind => Efus.AbstractReactant{<:Real},
         :changed => Function,
         :drawvalue => Bool,
+        COMMON_ARGS...,
     ]
 )
 

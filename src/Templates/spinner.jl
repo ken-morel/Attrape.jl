@@ -4,9 +4,9 @@ const Spinner = Component{SpinnerBackend}
 
 function Efus.mount!(c::Spinner)
     spin = Mousetrap.Spinner()
+    c.mount = SimpleMount(spin)
     processcommonargs!(c, spin)
     set_is_spinning!(spin, c[:spinning]::Bool)
-    c.mount = SimpleMount(spin)
     isnothing(c.parent) || childgeometry!(c.parent, c)
     return c.mount
 end
@@ -21,5 +21,6 @@ const spinner = Efus.EfusTemplate(
     SpinnerBackend,
     Efus.TemplateParameter[
         :spinning => Bool => true,
+        COMMON_ARGS...,
     ]
 )

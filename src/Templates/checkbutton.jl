@@ -37,5 +37,6 @@ const checkbutton = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :toggled => Function,
         :bind => Efus.AbstractReactant{CheckButtonState},
+        COMMON_ARGS...,
     ]
 )

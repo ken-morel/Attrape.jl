@@ -56,9 +56,25 @@ function halfduplex!(fn::Function, m::SimpleSyncingMount, attrape::Bool)  # attr
     return
 end
 
-const COMMON_ARGS = []
+const COMMON_ARGS = Pair{Symbol, Type}[
+    :margin => Efus.EEdgeInsets{Number, nothing},
+    :expand => Efus.EOrient,
+]
 
-function processcommonargs!(::AttrapeComponent, ::Mousetrap.Widget)
+function processcommonargs!(c::AttrapeComponent, w::Mousetrap.Widget)
+    c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
+        set_margin_bottom!(w, m.bottom)
+        set_margin_top!(w, m.top)
+        set_margin_start!(w, m.left)
+        set_margin_end!(w, m.right)
+    end
+    c[:expand] isa EOrient && let e = c[:expand]
+        v = e ∈ [:both, :vertical]
+        h = e ∈ [:both, :horizontal]
+        set_expand_vertically!(sep, v)
+        set_expand_horizontally!(sep, h)
+    end
+    return
 end
 
 function childgeometry!(parent::AttrapeComponent, child::AttrapeComponent)

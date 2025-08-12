@@ -5,9 +5,9 @@ const TextView = Component{TextViewBackend}
 function Efus.mount!(c::TextView)
     entry = Mousetrap.TextView()
     c.mount = SimpleSyncingMount(entry)
+    processcommonargs!(c, entry)
     c[:changed] isa Function && connect_signal_text_changed!(c[:changed], entry)
     c[:text] isa AbstractString && set_text!(entry, c[:text])
-    processcommonargs!(c, entry)
     c[:padding] isa Efus.EEdgeInsets && let m = c[:margin]
         set_margin_bottom!(entry, m.bottom)
         set_margin_top!(entry, m.top)
@@ -43,6 +43,7 @@ const textView = EfusTemplate(
         :bind => Efus.AbstractReactant{<:AbstractString},
         :justify => JustifyMode,
         :text => String,
+        COMMON_ARGS...,
     ]
 
 )

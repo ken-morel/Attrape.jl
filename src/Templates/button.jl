@@ -20,5 +20,6 @@ const button = EfusTemplate(
         :clicked => Function,
         :frame => Bool,
         :circular => Bool,
+        COMMON_ARGS...,
     ]
 )

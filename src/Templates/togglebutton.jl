@@ -4,12 +4,12 @@ const ToggleButton = Component{ToggleButtonBackend}
 
 function Efus.mount!(c::ToggleButton)::AttrapeMount
     btn = Mousetrap.ToggleButton()
+    c.mount = SimpleSyncingMount(btn)
     processcommonargs!(c, btn)
     c[:clicked] isa Function && connect_signal_clicked!(btn, c[:clicked])
     c[:toggled] isa Function && connect_signal_toggled!(btn, c[:toggled])
     c[:frame] isa Bool && set_has_frame!(btn, c[:frame])
     c[:circular] isa Bool && set_is_circular!(btn, c[:circular])
-    c.mount = SimpleSyncingMount(btn)
     c[:bind] isa Efus.AbstractReactant{Bool} && let r = c[:bind]
         set_is_active!(btn, getvalue(r))
         connect_signal_toggled!(btn) do self::Mousetrap.ToggleButton
@@ -43,5 +43,6 @@ const toggleButton = Efus.EfusTemplate(
         :frame => Bool,
         :circular => Bool,
         :bind => Efus.AbstractReactant{Bool},
+        COMMON_ARGS...,
     ]
 )

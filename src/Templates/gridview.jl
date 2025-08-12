@@ -18,5 +18,6 @@ const gridView = Efus.EfusTemplate(
         :orient => Mousetrap.detail._Orientation => ORIENTATION_VERTICAL,
         :min => Integer,
         :max => Integer,
+        COMMON_ARGS...,
     ]
 )

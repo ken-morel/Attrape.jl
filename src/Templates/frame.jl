@@ -53,6 +53,6 @@ const frame = Efus.EfusTemplate(
     Efus.TemplateParameter[
         :label => String,
         :box => Mousetrap.detail._Orientation,
-        :margin => Efus.EEdgeInsets{Number, nothing},
+        COMMON_ARGS...,
     ]
 )
