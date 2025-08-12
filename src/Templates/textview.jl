@@ -1,6 +1,8 @@
-struct TextviewBackend <: AttrapeBackend end
+struct TextViewBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{TextViewBackend})
+const TextView = Component{TextViewBackend}
+
+function Efus.mount!(c::TextView)
     entry = Mousetrap.TextView()
     c.mount = SimpleSyncingMount(entry)
     c[:changed] isa Function && connect_signal_text_changed!(c[:changed], entry)
@@ -32,13 +34,13 @@ function Efus.mount!(c::Efus.Component{TextViewBackend})
 end
 
 
-const Textview = EfusTemplate(
-    :Textview,
-    TextviewBackend,
+const textView = EfusTemplate(
+    :TextView,
+    TextViewBackend,
     Efus.TemplateParameter[
         :changed => Function,
-        :padding => EEdgeInsets{Number, nothing},
-        :bind => Efus.AbstractReactant,
+        :padding => EEdgeInsets{Real, nothing},
+        :bind => Efus.AbstractReactant{<:AbstractString},
         :justify => JustifyMode,
         :text => String,
     ]

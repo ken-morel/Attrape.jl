@@ -1,6 +1,8 @@
 struct ProgressBarBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{ProgressBarBackend})
+const ProgressBar = Component{ProgressBarBackend}
+
+function Efus.mount!(c::ProgressBar)
     scl = Mousetrap.ProgressBar()
     processcommonargs!(c, scl)
     c.mount = SimpleMount(scl)
@@ -22,7 +24,7 @@ function Efus.mount!(c::Efus.Component{ProgressBarBackend})
     return c.mount
 end
 
-const ProgressBar = Efus.EfusTemplate(
+const progressBar = Efus.EfusTemplate(
     :ProgressBar,
     ProgressBarBackend,
     Efus.TemplateParameter[

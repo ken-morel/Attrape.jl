@@ -1,6 +1,8 @@
 struct ButtonBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{ButtonBackend})::AttrapeMount
+const Button = Component{ButtonBackend}
+
+function Efus.mount!(c::Button)
     btn = Mousetrap.Button()
     processcommonargs!(c, btn)
     c[:clicked] isa Function && connect_signal_clicked!(c[:clicked], btn)
@@ -11,7 +13,7 @@ function Efus.mount!(c::Efus.Component{ButtonBackend})::AttrapeMount
     return c.mount
 end
 
-const Button = Efus.EfusTemplate(
+const button = EfusTemplate(
     :Button,
     ButtonBackend,
     Efus.TemplateParameter[

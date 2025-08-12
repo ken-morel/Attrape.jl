@@ -1,6 +1,8 @@
 struct LabelBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{LabelBackend})::AttrapeMount
+const Label = Efus.Component{LabelBackend}
+
+function Efus.mount!(c::Label)::AttrapeMount
     label = Mousetrap.Label(c[:text]::String)
     c[:justify] isa JustifyMode && set_justify_mode!(label, c[:justify])
     c[:wrap] isa LabelWrapMode && set_wrap_mode!(label, c[:wrap])
@@ -11,7 +13,7 @@ function Efus.mount!(c::Efus.Component{LabelBackend})::AttrapeMount
     return c.mount
 end
 
-const Label = Efus.EfusTemplate(
+const label = Efus.EfusTemplate(
     :Label,
     LabelBackend,
     Efus.TemplateParameter[

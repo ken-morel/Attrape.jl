@@ -1,6 +1,8 @@
 struct ScaleBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{ScaleBackend})
+const Scale = Efus.Component{ScaleBackend}
+
+function Efus.mount!(c::Scale)
     scl = Mousetrap.Scale(c[:range]::UnitRange{<:Integer})
     processcommonargs!(c, scl)
     set_orientation!(scl, c[:orient])
@@ -24,7 +26,7 @@ function Efus.mount!(c::Efus.Component{ScaleBackend})
     return c.mount
 end
 
-const Scale = Efus.EfusTemplate(
+const scale = Efus.EfusTemplate(
     :Scale,
     ScaleBackend,
     Efus.TemplateParameter[

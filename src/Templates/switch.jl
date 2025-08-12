@@ -1,6 +1,8 @@
 mutable struct SwitchBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{SwitchBackend})::AttrapeMount
+const Switch = Component{SwitchBackend}
+
+function Efus.mount!(c::Switch)
     btn = Mousetrap.Switch()
     processcommonargs!(c, btn)
     c[:switched] isa Function && connect_signal_switched!(btn, c[:switched])
@@ -23,13 +25,13 @@ function Efus.mount!(c::Efus.Component{SwitchBackend})::AttrapeMount
     return c.mount
 end
 
-function childgeometry!(frm::Efus.Component{SwitchBackend}, child::AttrapeComponent)
+function childgeometry!(frm::Switch, child::AttrapeComponent)
     isnothing(frm.mount) && return
     set_child!(frm.mount.widget, child.mount.widget)
     return
 end
 
-const Switch = Efus.EfusTemplate(
+const switch = Efus.EfusTemplate(
     :Switch,
     SwitchBackend,
     Efus.TemplateParameter[

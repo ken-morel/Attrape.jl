@@ -1,6 +1,8 @@
 struct SeparatorBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{SeparatorBackend})::AttrapeMount
+const Separator = Component{SeparatorBackend}
+
+function Efus.mount!(c::Separator)
     sep = Mousetrap.Separator()
     processcommonargs!(c, sep)
     c[:margin] isa Integer && set_margin!(sep, c[:margin])
@@ -15,7 +17,7 @@ function Efus.mount!(c::Efus.Component{SeparatorBackend})::AttrapeMount
     return c.mount
 end
 
-const Separator = Efus.EfusTemplate(
+const separator = Efus.EfusTemplate(
     :Separator,
     SeparatorBackend,
     Efus.TemplateParameter[

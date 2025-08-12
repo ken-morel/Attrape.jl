@@ -97,29 +97,33 @@ include("entry.jl")
 include("textview.jl")
 include("dropdown.jl")
 include("expander.jl")
+include("adjustment.jl")
+include("gridview.jl")
 
 function eregister()
     registertemplate.(
         (:Attrape,), [
-            Frame,
-            Label,
-            Box,
-            FlowBox,
-            Separator,
-            ImageDisplay,
-            Button,
-            ToggleButton,
-            CheckButton,
-            Switch,
-            SpinButton,
-            Scale,
-            LevelBar,
-            ProgressBar,
-            Spinner,
-            Entry,
-            Textview,
-            Dropdown,
-            Expander,
+            frame,
+            label,
+            box,
+            flowbox,
+            separator,
+            imageDisplay,
+            button,
+            toggleButton,
+            checkbutton,
+            switch,
+            spinButton,
+            scale,
+            levelBar,
+            progressBar,
+            spinner,
+            entry,
+            textView,
+            dropdown,
+            expander,
+            adjustment,
+            gridView,
         ]
     )
     return

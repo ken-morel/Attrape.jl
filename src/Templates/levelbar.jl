@@ -1,6 +1,8 @@
 struct LevelBarBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{LevelBarBackend})
+const LevelBar = Efus.Component{LevelBarBackend}
+
+function Efus.mount!(c::LevelBar)
     scl = Mousetrap.LevelBar(c[:range]::UnitRange{<:Integer})
     processcommonargs!(c, scl)
     c.mount = SimpleMount(scl)
@@ -18,7 +20,7 @@ function Efus.mount!(c::Efus.Component{LevelBarBackend})
     return c.mount
 end
 
-const LevelBar = Efus.EfusTemplate(
+const levelBar = Efus.EfusTemplate(
     :LevelBar,
     LevelBarBackend,
     Efus.TemplateParameter[

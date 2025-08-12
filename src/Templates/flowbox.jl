@@ -1,9 +1,11 @@
-struct FlowBoxBackend <: AttrapeBackend end
+struct FlowboxBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{FlowBoxBackend})::AttrapeMount
+const Flowbox = Component{FlowboxBackend}
+
+function Efus.mount!(c::Flowbox)::AttrapeMount
     box = Mousetrap.FlowBox(c[:orient]::Mousetrap.detail._Orientation)
     processcommonargs!(c, box)
-    c[:spacing] isa Integer && set_spacing!(box, c[:spacing])
+    c[:spacing] isa Real && set_spacing!(box, c[:spacing])
     c.mount = SimpleMount(box)
     isnothing(c.parent) || childgeometry!(c.parent, c)
     mount!.(c.children)
@@ -11,11 +13,11 @@ function Efus.mount!(c::Efus.Component{FlowBoxBackend})::AttrapeMount
 end
 
 
-const FlowBox = Efus.EfusTemplate(
-    :FlowBox,
-    FlowBoxBackend,
+const flowbox = Efus.EfusTemplate(
+    :Flowbox,
+    FlowboxBackend,
     Efus.TemplateParameter[
         :orient => Mousetrap.detail._Orientation => ORIENTATION_VERTICAL,
-        :spacing => Integer,
+        :spacing => Real,
     ]
 )

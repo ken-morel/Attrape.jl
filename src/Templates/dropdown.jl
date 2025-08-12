@@ -1,7 +1,8 @@
 struct DropdownBackend <: AttrapeBackend end
 
-using Efus: AbstractReactant
-function Efus.mount!(c::Efus.Component{DropdownBackend})
+const Dropdown = Component{DropdownBackend}
+
+function Efus.mount!(c::DropDown)
     drop = Mousetrap.DropDown()
     processcommonargs!(c, drop)
     c.mount = SimpleSyncingMount(drop)
@@ -30,7 +31,7 @@ function Efus.mount!(c::Efus.Component{DropdownBackend})
 end
 
 
-const Dropdown = Efus.EfusTemplate(
+const dropdown = Efus.EfusTemplate(
     :Dropdown,
     DropdownBackend,
     Efus.TemplateParameter[

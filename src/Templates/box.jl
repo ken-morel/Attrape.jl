@@ -1,6 +1,7 @@
 struct BoxBackend <: AttrapeBackend end
+const Box = Component{BoxBackend}
 
-function Efus.mount!(c::Efus.Component{BoxBackend})::AttrapeMount
+function Efus.mount!(c::Box)
     box = Mousetrap.Box(c[:orient]::Mousetrap.detail._Orientation)
     processcommonargs!(c, box)
     c[:spacing] isa Integer && set_spacing!(box, c[:spacing])
@@ -10,7 +11,7 @@ function Efus.mount!(c::Efus.Component{BoxBackend})::AttrapeMount
     return c.mount
 end
 
-const Box = Efus.EfusTemplate(
+const box = EfusTemplate(
     :Box,
     BoxBackend,
     Efus.TemplateParameter[

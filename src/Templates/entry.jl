@@ -1,6 +1,8 @@
 struct EntryBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{EntryBackend})
+const Entry = Efus.Component{EntryBackend}
+
+function Efus.mount!(c::Entry)
     entry = Mousetrap.Entry()
     c.mount = SimpleSyncingMount(entry)
     c[:changed] isa Function && connect_signal_text_changed!(c[:changed], entry)
@@ -28,7 +30,7 @@ function Efus.mount!(c::Efus.Component{EntryBackend})
 end
 
 
-const Entry = EfusTemplate(
+const entry = EfusTemplate(
     :Entry,
     EntryBackend,
     Efus.TemplateParameter[

@@ -1,6 +1,8 @@
 mutable struct ToggleButtonBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{ToggleButtonBackend})::AttrapeMount
+const ToggleButton = Component{ToggleButtonBackend}
+
+function Efus.mount!(c::ToggleButton)::AttrapeMount
     btn = Mousetrap.ToggleButton()
     processcommonargs!(c, btn)
     c[:clicked] isa Function && connect_signal_clicked!(btn, c[:clicked])
@@ -26,13 +28,13 @@ function Efus.mount!(c::Efus.Component{ToggleButtonBackend})::AttrapeMount
     return c.mount
 end
 
-function childgeometry!(frm::Efus.Component{ToggleButtonBackend}, child::AttrapeComponent)
+function childgeometry!(frm::ToggleButton, child::AttrapeComponent)
     isnothing(frm.mount) && return
     set_child!(frm.mount.widget, child.mount.widget)
     return
 end
 
-const ToggleButton = Efus.EfusTemplate(
+const toggleButton = Efus.EfusTemplate(
     :ToggleButton,
     ToggleButtonBackend,
     Efus.TemplateParameter[

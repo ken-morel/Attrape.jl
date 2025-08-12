@@ -1,7 +1,9 @@
 struct SpinButtonBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{SpinButtonBackend})
-    rng = Mousetrap.SpinButton(c[:range]::UnitRange{<:Integer})
+const SpinButton = Component{SpinButtonBackend}
+
+function Efus.mount!(c::SpinButton)
+    rng = Mousetrap.SpinButton(c[:range]::UnitRange{<:Real})
     processcommonargs!(c, rng)
     set_orientation!(rng, c[:orient])
     c.mount = SimpleSyncingMount(rng)
@@ -23,11 +25,11 @@ function Efus.mount!(c::Efus.Component{SpinButtonBackend})
     return c.mount
 end
 
-const SpinButton = Efus.EfusTemplate(
+const spinButton = EfusTemplate(
     :SpinButton,
     SpinButtonBackend,
     Efus.TemplateParameter[
-        :range => UnitRange{<:Integer} => 0:100,
+        :range => UnitRange{<:Real} => 0:100,
         :orient => Mousetrap.detail._Orientation => ORIENTATION_HORIZONTAL,
         :bind => Efus.AbstractReactant{<:Real},
         :changed => Function,

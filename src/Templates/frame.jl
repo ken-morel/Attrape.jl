@@ -1,6 +1,8 @@
 struct FrameBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
+const Frame = Efus.Component{FrameBackend}
+
+function Efus.mount!(c::Frame)::AttrapeMount
     frame = Mousetrap.Frame()
     c[:label] isa String && set_label_widget!(
         frame, Mousetrap.Label(c[:label])
@@ -14,7 +16,7 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     outlet = if isnothing(c[:box])
         frame
     else
-        box = Mousetrap.Box(something(c[:orient], ORIENTATION_VERTICAL))
+        box = Mousetrap.Box(c[:box]::Mousetrap.detail._Orientation)
         set_child!(frame, box)
         box
     end
@@ -35,7 +37,7 @@ function Efus.mount!(c::Efus.Component{FrameBackend})::AttrapeMount
     return c.mount
 end
 
-function childgeometry!(frm::Efus.Component{FrameBackend}, child::AttrapeComponent)
+function childgeometry!(frm::Frame, child::AttrapeComponent)
     isnothing(frm.mount) && return
     if frm.mount.outlet == frm.mount.widget
         set_child!(frm.mount.widget, child.mount.widget)
@@ -45,7 +47,7 @@ function childgeometry!(frm::Efus.Component{FrameBackend}, child::AttrapeCompone
     return
 end
 
-const Frame = Efus.EfusTemplate(
+const frame = Efus.EfusTemplate(
     :Frame,
     FrameBackend,
     Efus.TemplateParameter[

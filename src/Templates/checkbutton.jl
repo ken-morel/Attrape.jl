@@ -1,6 +1,8 @@
-mutable struct CheckButtonBackend <: AttrapeBackend end
+mutable struct CheckbuttonBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{CheckButtonBackend})::AttrapeMount
+const Checkbutton = Component{CheckbuttonBackend}
+
+function Efus.mount!(c::CheckButton)
     btn = Mousetrap.CheckButton()
     processcommonargs!(c, btn)
     c[:toggled] isa Function && connect_signal_toggled!(btn, c[:toggled])
@@ -23,15 +25,15 @@ function Efus.mount!(c::Efus.Component{CheckButtonBackend})::AttrapeMount
     return c.mount
 end
 
-function childgeometry!(frm::Efus.Component{CheckButtonBackend}, child::AttrapeComponent)
+function childgeometry!(frm::Checkbutton, child::AttrapeComponent)
     isnothing(frm.mount) && return
     set_child!(frm.mount.widget, child.mount.widget)
     return
 end
 
-const CheckButton = Efus.EfusTemplate(
-    :CheckButton,
-    CheckButtonBackend,
+const checkbutton = Efus.EfusTemplate(
+    :Checkbutton,
+    CheckbuttonBackend,
     Efus.TemplateParameter[
         :toggled => Function,
         :bind => Efus.AbstractReactant{CheckButtonState},

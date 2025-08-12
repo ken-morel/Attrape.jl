@@ -1,8 +1,10 @@
 struct ExpanderBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{ExpanderBackend})::AttrapeMount
+const Expander = Efus.Component{ExpanderBackend}
+
+function Efus.mount!(c::Expander)
     frame = Mousetrap.Expander()
-    c[:label] isa String && set_label_widget!(
+    c[:label] isa AbstractString && set_label_widget!(
         frame, Mousetrap.Label(c[:label])
     )
     c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
@@ -45,7 +47,7 @@ function childgeometry!(frm::Efus.Component{ExpanderBackend}, child::AttrapeComp
     return
 end
 
-const Expander = Efus.EfusTemplate(
+const expander = Efus.EfusTemplate(
     :Expander,
     ExpanderBackend,
     Efus.TemplateParameter[
