@@ -1,14 +1,16 @@
 struct LevelBarBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{LevelBarBackend})
+const LevelBar = Efus.Component{LevelBarBackend}
+
+function Efus.mount!(c::LevelBar)
     scl = Mousetrap.LevelBar(c[:range]::UnitRange{<:Integer})
-    processcommonargs!(c, scl)
     c.mount = SimpleMount(scl)
+    processcommonargs!(c, scl)
     c[:bind] isa Efus.AbstractReactant{<:Real} && let r = c[:bind]
-        Mousetrap.set_value!(scl, getvalue(r))
-        subscribe!(r, nothing) do ::Nothing, val::Real
+        set_value!(scl, getvalue(r))
+        subscribe!(r, nothing) do val::Real
             try
-                Mousetrap.set_value!(scl, val)
+                set_value!(scl, val)
             catch e
                 errorincallback(e)
             end
@@ -18,12 +20,14 @@ function Efus.mount!(c::Efus.Component{LevelBarBackend})
     return c.mount
 end
 
-const LevelBar = Efus.EfusTemplate(
+
+const levelBar = Efus.EfusTemplate(
     :LevelBar,
     LevelBarBackend,
     Efus.TemplateParameter[
         :range => UnitRange{<:Integer} => 0:100,
         :bind => Efus.AbstractReactant{<:Real},
+        COMMON_ARGS...,
     ]
 )
 

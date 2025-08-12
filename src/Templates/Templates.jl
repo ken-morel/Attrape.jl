@@ -16,19 +16,95 @@ struct SimpleMount <: AttrapeMount
     SimpleMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o)
 end
 
-@enum _UpdateSide _UpdateSideNone _UpdateSideMousetrap _UpdateSideAttrape
 mutable struct SimpleSyncingMount <: AttrapeMount
     const widget::Mousetrap.Widget
     const outlet::Mousetrap.Widget
-    updateside::_UpdateSide
-    SimpleSyncingMount(w::Mousetrap.Widget) = new(w, w, _UpdateSideNone)
-    SimpleSyncingMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o, _UpdateSideNone)
+    sync::Int8
+    SimpleSyncingMount(w::Mousetrap.Widget) = new(w, w, zero(Int8))
+    SimpleSyncingMount(w::Mousetrap.Widget, o::Mousetrap.Widget) = new(w, o, zero(Int8))
 end
 
-const COMMON_ARGS = []
+"""
+    function update!(fn::Function, m::SimpleSyncingMount, s::_UpdateSide)
 
-function processcommonargs!(::AttrapeComponent, ::Mousetrap.Widget)
+This permits update on both side to occur, even several updates in the same
+direction simultaneously, but not both sides at the same time.
+`attrape` tells if it is attrape side updating mousetrap or opposite else.
+"""
+function halfduplex!(fn::Function, m::SimpleSyncingMount, attrape::Bool)  # attrape => true, mousetrap => false
+    if attrape
+        m.sync < 0 && return # othr side updating
+        m.sync += 1
+        try
+            fn()
+        catch e
+            errorincallback(e)
+        finally
+            m.sync -= 1
+        end
+    else
+        m.sync > 0 && return # othr side updating
+        m.sync -= 1
+        try
+            fn()
+        catch e
+            errorincallback(e)
+        finally
+            m.sync += 1
+        end
+    end
+    return
 end
+
+const COMMON_ARGS = Pair{Symbol, Type}[
+    :margin => Efus.EEdgeInsets{Number, nothing},
+    :expand => Efus.EOrient,
+]
+
+function setmargin!(w::Widget, m::EEdgeInsets)
+    set_margin_bottom!(w, m.bottom)
+    set_margin_top!(w, m.top)
+    set_margin_start!(w, m.left)
+    set_margin_end!(w, m.right)
+    return
+end
+function setexpand!(w::Widget, e::EOrient)
+    v = e ∈ [:both, :vertical]
+    h = e ∈ [:both, :horizontal]
+    set_expand_vertically!(w, v)
+    return set_expand_horizontally!(w, h)
+end
+
+function processcommonargs!(c::AttrapeComponent, w::Mousetrap.Widget)
+    c[:margin] isa EEdgeInsets && setmargin!(w, c[:margin])
+    c[:expand] isa EOrient && setexpand!(w, c[:expand])
+    return
+end
+function updateutil!(fn::Function, c::AttrapeComponent)
+    isnothing(c.mount) && return
+    w = c.mount.widget
+    for name in c.dirty
+        if name === :margin
+            c[:margin] isa EEdgeInsets && setmargin!(w, c[:margin])
+        elseif name == :expand
+            c[:expand] isa EOrient && setexpand!(w, c[:expand])
+        else
+            ismissing(fn(name, c[name])) && @warn(
+                "Changed immutable attribute",
+                name,
+                " of component of type",
+                typeof(c),
+            )
+        end
+    end
+    return
+end
+function Efus.update!(c::AttrapeComponent)
+    return updateutil!(c) do _, _
+        missing
+    end
+end
+
 
 function childgeometry!(parent::AttrapeComponent, child::AttrapeComponent)
     isnothing(parent.mount) && return
@@ -63,26 +139,36 @@ include("levelbar.jl")
 include("progressbar.jl")
 include("spinner.jl")
 include("entry.jl")
+include("textview.jl")
+include("dropdown.jl")
+include("expander.jl")
+include("adjustment.jl")
+include("gridview.jl")
 
 function eregister()
     registertemplate.(
         (:Attrape,), [
-            Frame,
-            Label,
-            Box,
-            FlowBox,
-            Separator,
-            ImageDisplay,
-            Button,
-            ToggleButton,
-            CheckButton,
-            Switch,
-            SpinButton,
-            Scale,
-            LevelBar,
-            ProgressBar,
-            Spinner,
-            Entry,
+            frame,
+            label,
+            box,
+            flowBox,
+            separator,
+            imageDisplay,
+            button,
+            toggleButton,
+            checkbutton,
+            switch,
+            spinButton,
+            scale,
+            levelBar,
+            progressBar,
+            spinner,
+            entry,
+            textView,
+            dropDown,
+            expander,
+            adjustment,
+            gridView,
         ]
     )
     return

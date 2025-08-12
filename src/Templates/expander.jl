@@ -1,22 +1,17 @@
-struct FrameBackend <: AttrapeBackend end
+struct ExpanderBackend <: AttrapeBackend end
 
-const Frame = Efus.Component{FrameBackend}
+const Expander = Efus.Component{ExpanderBackend}
 
-function Efus.mount!(c::Frame)::AttrapeMount
-    frame = Mousetrap.Frame()
-    c[:label] isa String && set_label_widget!(
+function Efus.mount!(c::Expander)
+    frame = Mousetrap.Expander()
+    c[:label] isa AbstractString && set_label_widget!(
         frame, Mousetrap.Label(c[:label])
     )
-    c[:margin] isa Efus.EEdgeInsets && let m = c[:margin]
-        set_margin_bottom!(frame, m.bottom)
-        set_margin_top!(frame, m.top)
-        set_margin_start!(frame, m.left)
-        set_margin_end!(frame, m.right)
-    end
+
     outlet = if isnothing(c[:box])
         frame
     else
-        box = Mousetrap.Box(c[:box]::Mousetrap.detail._Orientation)
+        box = Mousetrap.Box(something(c[:orient], ORIENTATION_VERTICAL))
         set_child!(frame, box)
         box
     end
@@ -27,7 +22,7 @@ function Efus.mount!(c::Frame)::AttrapeMount
         if length(c.children) >= 1
             mount!(last(c.children))
             length(c.children) > 1 && @warn(
-                "Frame widget received more than one child.",
+                "Expander widget received more than one child.",
                 " only the last was mounted."
             )
         end
@@ -37,19 +32,17 @@ function Efus.mount!(c::Frame)::AttrapeMount
     return c.mount
 end
 
-
-function Efus.update!(c::Frame)
+function Efus.update!(c::Expander)
     return updateutil!(c) do name, value
-        frame = c.mount.widget
         if name === :label
-            set_label_widget!(frame, Label(value))
+            set_label_widget!(c.mount.widget, Label(value::AbstractString))
         else
             missing
         end
     end
 end
 
-function childgeometry!(frm::Frame, child::AttrapeComponent)
+function childgeometry!(frm::Efus.Component{ExpanderBackend}, child::AttrapeComponent)
     isnothing(frm.mount) && return
     if frm.mount.outlet == frm.mount.widget
         set_child!(frm.mount.widget, child.mount.widget)
@@ -59,9 +52,9 @@ function childgeometry!(frm::Frame, child::AttrapeComponent)
     return
 end
 
-const frame = Efus.EfusTemplate(
-    :Frame,
-    FrameBackend,
+const expander = Efus.EfusTemplate(
+    :Expander,
+    ExpanderBackend,
     Efus.TemplateParameter[
         :label => String,
         :box => Mousetrap.detail._Orientation,

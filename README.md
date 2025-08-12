@@ -1,94 +1,97 @@
-# Attrape
+# Attrape.jl
 
-Well, this is [Attrape] A julia module which uses:
+[![][img-stable]][doc-stable] [![][img-dev]][doc-dev]
 
-- Mousetrap: The gtk based ui toolkit
-- Atak: The utilities for making apps
-- Efus: The component language.
+[img-stable]: https://img.shields.io/badge/docs-stable-blue.svg
+[doc-stable]: https://github.com/ken-morel/Attrape.jl
 
-Attrape defines converters, components and other usefull things for easily crafting a Mousetrap application in julia.
-since Attrape does mostly creating bindings for Efus.jl, what I did not really not document... at all. The easiest way to know how to use it is to read through the examples I aimed at showing Efus and Attrape features.
+[img-dev]: https://img.shields.io/badge/docs-dev-blue.svg
+[doc-dev]: https://github.com/ken-morel/Attrape.jl
 
-## Efus
+Attrape.jl is a declarative UI toolkit for Julia, built on top of [Mousetrap.jl](https://github.com/clemapfel/mousetrap.jl) (a Julia wrapper for the GTK-based Mousetrap UI library). It leverages the power of [Efus.jl](https://github.com/ken-morel/Efus.jl) to provide a component-based, declarative syntax for building modern, reactive desktop applications.
 
-I did not document efus, so I will do some here.
-[Efus.jl] is a language and tools for creating templates, and calling them using Efus language
-(note that efus language is not markup, but a set of instructions for creating ui components).
+## Features
 
-## Installing Attrape
+- **Declarative UI:** Define your application's UI using a simple and intuitive syntax, inspired by modern web frameworks.
+- **Reactive Data Binding:** Create dynamic applications with two-way data binding. Changes in your application's state are automatically reflected in the UI, and vice-versa.
+- **Component-Based Architecture:** Build your UI from a rich set of reusable components, including buttons, sliders, text inputs, and more.
+- **Application and Window Management:** Attrape.jl provides a high-level API for managing your application's lifecycle, windows, and navigation.
+- **Extensible:** Easily create your own custom components to suit your application's needs.
 
-Attrape is still in development, but I would love having testers :D. You can install Attrape
-from the github repository.
-Firstly [install mousetrap](#)
+## Installation
+
+Attrape.jl is still under active development. To install it, you first need to install its dependencies from their GitHub repositories:
 
 ```julia
 using Pkg
-Pkg.add("https://github.com/ken-morel/Efus.jl")
-Pkg.add("https://github.com/ken-morel/Atak.jl")
-Pkg.add("https://github.com/ken-morel/Attrape.jl")
+Pkg.add(url="https://github.com/ken-morel/Efus.jl")
+Pkg.add(url="https://github.com/ken-morel/Atak.jl")
+Pkg.add(url="https://github.com/ken-morel/Attrape.jl")
 ```
 
-## Using Attrape
+## Getting Started
 
-You do so using Efus, example creating a basic component(the efus string is evaluated and converted to component at compile time).
-
-```julia
-import Attrape # import it to register efus components
-using Mousetrap
-using Efus: @efuspreeval_str
-
-label = "Your age: "
-
-const form = efuspreeval"""
-  using Attrape # import Attrape components registered earlier to namespace
-
-  Frame margin=10x10 box=v # vbox
-    Box orient=h
-      Label text=(label)
-      SpinButton
-"""Main # specify module to be evaluated in
-main() do app::Application
-  win = Window(app)
-  frame = mount!(form).widget
-  set_child!(win, frame)
-  present!(win)
-  return
-end
-
-```
-
-You may also use Attrape for managing the window and application for you.
+Here's a simple example of a "Hello, World!" application built with Attrape.jl:
 
 ```julia
 using Attrape
 using Efus
-import Mousetrap # always do this please
+import Mousetrap # It's good practice to import Mousetrap as well
 
-const Home = View(
-  efusthow"""
-    Frame margin=50x50 label="Hello, welcome" box=h
-      Label="Welcome, click the button to choose toggles"
-      Button clicked=(gtscales)
+const HelloWorldView = View(
+    efusthrow"""
+    using Attrape
 
-  """
-) do nmsp, # namespace inwhich code will be evaluated
-    ctx, # the pagecontext instance holding window and app
-    args # keyword arguments passed using Home(...; foo=bar)
-
-  nmsp[:gtscales] = (_) -> push!(ctx, Scales)
+    Frame label="A beautiful frame" box=v
+      Label text="Hello world"
+      Label text="Hello world"
+    """
+) do nmsp, ctx, args
 end
 
-const val = EReactant(10)
-const Scales = StaticPage(
-  efuspreeval"""
-    Frame label="Here are a few scales"
-      Box orient=v
-        SpinButtton range=(1:2:100) bind=(val)
-        ProgressBar bind=(val)
-  """
-)
-
-(@main)(_) = run!(application("com.test";home=Home))
+function (@main)(::Vector{String})
+    return run!(
+        application(
+            home = HelloWorldView
+        )
+    )
+end
 ```
 
-Well, I'm sure somebody can now know what it's.
+In this example:
+
+1.  We define a `View` called `HelloWorldView`.
+2.  Inside the `View`, we use the `efusthrow` string macro to define the UI layout using Efus syntax.
+3.  We create a `Frame` with a vertical `Box` layout (`box=v`).
+4.  Inside the `Frame`, we add two `Label` widgets.
+5.  Finally, we create an `application` with `HelloWorldView` as its home page and `run!` it.
+
+## Available Components
+
+Attrape.jl provides a wide range of components to build your application's UI. Here are some of the most common ones:
+
+- `Frame`: A container with an optional label.
+- `Box`: A container that arranges its children horizontally or vertically.
+- `Label`: A widget that displays a small amount of text.
+- `Button`: A clickable button.
+- `ToggleButton`: A button that can be toggled between two states.
+- `CheckButton`: A checkable button.
+- `Switch`: A switch that can be toggled between on and off.
+- `SpinButton`: A button with an entry to display a numeric value.
+- `Scale`: A slider for selecting a value from a range.
+- `ProgressBar`: A widget to indicate progress of an operation.
+- `Spinner`: A widget to indicate that an operation is ongoing.
+- `Entry`: A single-line text entry widget.
+- `TextView`: A multi-line text entry widget.
+- `DropDown`: A dropdown menu for selecting from a list of options.
+- `ImageDisplay`: A widget to display an image.
+
+For more detailed examples, please see the `examples` directory.
+
+## Contributing
+
+Attrape.jl is an open-source project, and contributions are welcome! If you'd like to contribute, please feel free to open an issue or submit a pull request.
+
+## License
+
+Attrape.jl is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

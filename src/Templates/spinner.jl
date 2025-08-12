@@ -1,23 +1,31 @@
 struct SpinnerBackend <: AttrapeBackend end
 
-function Efus.mount!(c::Efus.Component{SpinnerBackend})::AttrapeMount
+const Spinner = Component{SpinnerBackend}
+
+function Efus.mount!(c::Spinner)
     spin = Mousetrap.Spinner()
-    processcommonargs!(c, spin)
-    Mousetrap.set_is_spinning!(spin, c[:spinning])
     c.mount = SimpleMount(spin)
+    processcommonargs!(c, spin)
+    set_is_spinning!(spin, c[:spinning]::Bool)
     isnothing(c.parent) || childgeometry!(c.parent, c)
     return c.mount
 end
 
-function Efus.update!(c::Efus.Component{SpinnerBackend})
-    Mousetrap.set_is_spinning!(c.mount.widget, c[:spinning])
-    return
+function Efus.update!(c::Spinner)
+    return updateutil!(c) do name, value
+        if name === :spinning
+            set_is_spinning!(c.mount.widget, value::Bool)
+        else
+            missing
+        end
+    end
 end
 
-const Spinner = Efus.EfusTemplate(
+const spinner = Efus.EfusTemplate(
     :Spinner,
     SpinnerBackend,
     Efus.TemplateParameter[
         :spinning => Bool => true,
+        COMMON_ARGS...,
     ]
 )
