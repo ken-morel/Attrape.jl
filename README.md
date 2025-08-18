@@ -8,6 +8,8 @@
 [img-dev]: https://img.shields.io/badge/docs-dev-blue.svg
 [doc-dev]: https://github.com/ken-morel/Attrape.jl
 
+[![wakatime](https://wakatime.com/badge/github/ken-morel/Attrape.jl.svg)](https://wakatime.com/badge/github/ken-morel/Attrape.jl)
+
 Attrape.jl is a declarative UI toolkit for Julia, built on top of [Mousetrap.jl](https://github.com/clemapfel/mousetrap.jl) (a Julia wrapper for the GTK-based Mousetrap UI library). It leverages the power of [Efus.jl](https://github.com/ken-morel/Efus.jl) to provide a component-based, declarative syntax for building modern, reactive desktop applications.
 
 ## Features
