@@ -1,6 +1,6 @@
 struct GridViewBackend <: AttrapeBackend end
 
-const GridView = Efus.Component{FrameBackend}
+const GridView = Efus.Component{GridViewBackend}
 
 function Efus.mount!(c::GridView)::AttrapeMount
     frame = Mousetrap.GridView(c[:orient]::Mousetrap.detail._Orientation)

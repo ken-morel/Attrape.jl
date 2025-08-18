@@ -4,7 +4,6 @@
 
 [img-stable]: https://img.shields.io/badge/docs-stable-blue.svg
 [doc-stable]: https://github.com/ken-morel/Attrape.jl
-
 [img-dev]: https://img.shields.io/badge/docs-dev-blue.svg
 [doc-dev]: https://github.com/ken-morel/Attrape.jl
 
@@ -95,3 +94,4 @@ Attrape.jl is an open-source project, and contributions are welcome! If you'd li
 ## License
 
 Attrape.jl is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
