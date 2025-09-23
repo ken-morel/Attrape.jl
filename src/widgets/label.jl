@@ -3,7 +3,7 @@ export Label
 mutable struct Label <: AttrapeComponent
     const text::MayBeReactive{Any}
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -13,7 +13,7 @@ mutable struct Label <: AttrapeComponent
     function Label(;
             text::MayBeReactive{Any},
             size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
+            margin::Union{Efus.Size, Nothing}=nothing,
             expand::Union{Bool, Nothing}=nothing,
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing

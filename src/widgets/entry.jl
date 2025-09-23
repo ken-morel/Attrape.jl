@@ -3,7 +3,7 @@ export Entry
 mutable struct Entry <: AttrapeComponent
     const text::MayBeReactive{Any}
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -13,11 +13,11 @@ mutable struct Entry <: AttrapeComponent
     signal_handler_id::Union{UInt, Nothing}
     function Entry(;
             text::MayBeReactive{Any},
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
+            size::Union{Efus.Size, Nothing} = nothing,
+            margin::Union{Efus.Size, Nothing} = nothing,
+            expand::Union{Bool, Nothing} = nothing,
+            halign::Union{Symbol, Nothing} = nothing,
+            valign::Union{Symbol, Nothing} = nothing
         )
         return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
@@ -49,7 +49,7 @@ function unmount!(e::Entry)
         Mousetrap.disconnect_signal!(e.widget, e.signal_handler_id)
         e.signal_handler_id = nothing
     end
-    e.widget = nothing
+    return e.widget = nothing
 end
 
 function update!(e::Entry)

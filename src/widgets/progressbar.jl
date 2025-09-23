@@ -3,7 +3,7 @@ export ProgressBar
 mutable struct ProgressBar <: AttrapeComponent
     const fraction::MayBeReactive{Any}
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -13,7 +13,7 @@ mutable struct ProgressBar <: AttrapeComponent
     function ProgressBar(;
             fraction::MayBeReactive{Any}=0.0,
             size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
+            margin::Union{Efus.Size, Nothing}=nothing,
             expand::Union{Bool, Nothing}=nothing,
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing

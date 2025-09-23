@@ -4,7 +4,7 @@ mutable struct Button <: AttrapeComponent
     const text::MayBeReactive{Any}
     const onclick::Function
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -14,11 +14,11 @@ mutable struct Button <: AttrapeComponent
     function Button(;
             text::MayBeReactive{Any},
             onclick::Function,
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
+            size::Union{Efus.Size, Nothing} = nothing,
+            margin::Union{Efus.Size, Nothing} = nothing,
+            expand::Union{Bool, Nothing} = nothing,
+            halign::Union{Symbol, Nothing} = nothing,
+            valign::Union{Symbol, Nothing} = nothing
         )
         return new(text, onclick, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
@@ -43,7 +43,7 @@ end
 
 function unmount!(b::Button)
     inhibit!(b.catalyst)
-    b.widget = nothing
+    return b.widget = nothing
 end
 
 function update!(b::Button)

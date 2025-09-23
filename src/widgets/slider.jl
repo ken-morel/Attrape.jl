@@ -6,7 +6,7 @@ mutable struct Slider <: AttrapeComponent
     const max::Real
     const step::Real
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -16,14 +16,14 @@ mutable struct Slider <: AttrapeComponent
     signal_handler_id::Union{UInt, Nothing}
     function Slider(;
             value::MayBeReactive{Any},
-            min::Real=0,
-            max::Real=100,
-            step::Real=1,
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
+            min::Real = 0,
+            max::Real = 100,
+            step::Real = 1,
+            size::Union{Efus.Size, Nothing} = nothing,
+            margin::Union{Efus.Size, Nothing} = nothing,
+            expand::Union{Bool, Nothing} = nothing,
+            halign::Union{Symbol, Nothing} = nothing,
+            valign::Union{Symbol, Nothing} = nothing
         )
         return new(value, min, max, step, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
@@ -57,7 +57,7 @@ function unmount!(s::Slider)
         Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
         s.signal_handler_id = nothing
     end
-    s.widget = nothing
+    return s.widget = nothing
 end
 
 function update!(s::Slider)

@@ -3,7 +3,7 @@ export Switch
 mutable struct Switch <: AttrapeComponent
     const active::MayBeReactive{Any}
     const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Margin, Nothing}
+    const margin::Union{Efus.Size, Nothing}
     const expand::Union{Bool, Nothing}
     const halign::Union{Symbol, Nothing}
     const valign::Union{Symbol, Nothing}
@@ -14,7 +14,7 @@ mutable struct Switch <: AttrapeComponent
     function Switch(;
             active::MayBeReactive{Any}=false,
             size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Margin, Nothing}=nothing,
+            margin::Union{Efus.Size, Nothing}=nothing,
             expand::Union{Bool, Nothing}=nothing,
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
