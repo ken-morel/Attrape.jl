@@ -18,17 +18,17 @@ mutable struct Label <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        lbl = new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        text isa AbstractReactive && catalyze!(lbl.catalyst, text) do value
-            lbl.dirty[:text] = value
-            update!(lbl) #FIX: Delayed updates
-        end
-        return lbl
+        return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
 end
 
 function mount!(l::Label, ::AttrapeComponent)
     l.widget = Mousetrap.Label(resolve(l.text)::String)
+
+    l.text isa AbstractReactive && catalyze!(l.catalyst, l.text) do value
+        l.dirty[:text] = value
+        update!(l)
+    end
 
     apply_layout!(l, l.widget)
 
@@ -37,6 +37,7 @@ end
 
 function unmount!(l::Label)
     inhibit!(l.catalyst)
+    l.widget = nothing
 end
 
 function update!(l::Label)

@@ -10,6 +10,7 @@ mutable struct TextView <: AttrapeComponent
     widget::Union{Mousetrap.TextView, Nothing}
     const catalyst::Catalyst
     const dirty::Dict{Symbol, Any}
+    signal_handler_id::Union{UInt, Nothing}
     function TextView(
             text::MayBeReactive{Any},
             size::Union{Efus.Size, Nothing}=nothing,
@@ -18,12 +19,7 @@ mutable struct TextView <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        tv = new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        text isa AbstractReactive && catalyze!(tv.catalyst, text) do value
-            tv.dirty[:text] = value
-            update!(tv)
-        end
-        return tv
+        return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
 end
 
@@ -33,7 +29,11 @@ function mount!(tv::TextView, ::AttrapeComponent)
     Mousetrap.set_text!(buffer, resolve(tv.text)::String)
 
     if tv.text isa AbstractReactive
-        Mousetrap.connect_signal_changed!(buffer) do _
+        catalyze!(tv.catalyst, tv.text) do value
+            tv.dirty[:text] = value
+            update!(tv)
+        end
+        tv.signal_handler_id = Mousetrap.connect_signal_changed!(buffer) do _
             setvalue!(tv.text, Mousetrap.get_text(buffer))
             return
         end
@@ -46,6 +46,11 @@ end
 
 function unmount!(tv::TextView)
     inhibit!(tv.catalyst)
+    if !isnothing(tv.signal_handler_id)
+        Mousetrap.disconnect_signal!(tv.widget, tv.signal_handler_id)
+        tv.signal_handler_id = nothing
+    end
+    tv.widget = nothing
 end
 
 function update!(tv::TextView)

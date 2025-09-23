@@ -10,6 +10,7 @@ mutable struct Switch <: AttrapeComponent
     widget::Union{Mousetrap.Switch, Nothing}
     const catalyst::Catalyst
     const dirty::Dict{Symbol, Any}
+    signal_handler_id::Union{UInt, Nothing}
     function Switch(;
             active::MayBeReactive{Any}=false,
             size::Union{Efus.Size, Nothing}=nothing,
@@ -18,12 +19,7 @@ mutable struct Switch <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        s = new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        active isa AbstractReactive && catalyze!(s.catalyst, active) do value
-            s.dirty[:active] = value
-            update!(s)
-        end
-        return s
+        return new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
 end
 
@@ -32,7 +28,11 @@ function mount!(s::Switch, ::AttrapeComponent)
     Mousetrap.set_active!(s.widget, resolve(s.active)::Bool)
 
     if s.active isa AbstractReactive
-        Mousetrap.connect_signal_state_set!(s.widget) do _, state
+        catalyze!(s.catalyst, s.active) do value
+            s.dirty[:active] = value
+            update!(s)
+        end
+        s.signal_handler_id = Mousetrap.connect_signal_state_set!(s.widget) do _, state
             setvalue!(s.active, state)
             return
         end
@@ -45,6 +45,11 @@ end
 
 function unmount!(s::Switch)
     inhibit!(s.catalyst)
+    if !isnothing(s.signal_handler_id)
+        Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
+        s.signal_handler_id = nothing
+    end
+    s.widget = nothing
 end
 
 function update!(s::Switch)

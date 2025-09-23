@@ -18,18 +18,18 @@ mutable struct ProgressBar <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        pb = new(fraction, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        fraction isa AbstractReactive && catalyze!(pb.catalyst, fraction) do value
-            pb.dirty[:fraction] = value
-            update!(pb)
-        end
-        return pb
+        return new(fraction, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
 end
 
 function mount!(pb::ProgressBar, ::AttrapeComponent)
     pb.widget = Mousetrap.ProgressBar()
     Mousetrap.set_fraction!(pb.widget, resolve(pb.fraction)::Real)
+
+    pb.fraction isa AbstractReactive && catalyze!(pb.catalyst, pb.fraction) do value
+        pb.dirty[:fraction] = value
+        update!(pb)
+    end
 
     apply_layout!(pb, pb.widget)
 
@@ -38,6 +38,7 @@ end
 
 function unmount!(pb::ProgressBar)
     inhibit!(pb.catalyst)
+    pb.widget = nothing
 end
 
 function update!(pb::ProgressBar)

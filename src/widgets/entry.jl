@@ -10,6 +10,7 @@ mutable struct Entry <: AttrapeComponent
     widget::Union{Mousetrap.Entry, Nothing}
     const catalyst::Catalyst
     const dirty::Dict{Symbol, Any}
+    signal_handler_id::Union{UInt, Nothing}
     function Entry(;
             text::MayBeReactive{Any},
             size::Union{Efus.Size, Nothing}=nothing,
@@ -18,12 +19,7 @@ mutable struct Entry <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        entry = new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        text isa AbstractReactive && catalyze!(entry.catalyst, text) do value
-            entry.dirty[:text] = value
-            update!(entry)
-        end
-        return entry
+        return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
 end
 
@@ -32,7 +28,11 @@ function mount!(e::Entry, ::AttrapeComponent)
     Mousetrap.set_text!(e.widget, resolve(e.text)::String)
 
     if e.text isa AbstractReactive
-        Mousetrap.connect_signal_changed!(e.widget) do _
+        catalyze!(e.catalyst, e.text) do value
+            e.dirty[:text] = value
+            update!(e)
+        end
+        e.signal_handler_id = Mousetrap.connect_signal_changed!(e.widget) do _
             setvalue!(e.text, Mousetrap.get_text(e.widget))
             return
         end
@@ -45,6 +45,11 @@ end
 
 function unmount!(e::Entry)
     inhibit!(e.catalyst)
+    if !isnothing(e.signal_handler_id)
+        Mousetrap.disconnect_signal!(e.widget, e.signal_handler_id)
+        e.signal_handler_id = nothing
+    end
+    e.widget = nothing
 end
 
 function update!(e::Entry)

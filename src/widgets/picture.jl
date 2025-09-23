@@ -18,18 +18,18 @@ mutable struct Picture <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        pic = new(source, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        source isa AbstractReactive && catalyze!(pic.catalyst, source) do value
-            pic.dirty[:source] = value
-            update!(pic)
-        end
-        return pic
+        return new(source, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
 end
 
 function mount!(p::Picture, ::AttrapeComponent)
     p.widget = Mousetrap.Picture()
     Mousetrap.set_filename!(p.widget, resolve(p.source)::String)
+
+    p.source isa AbstractReactive && catalyze!(p.catalyst, p.source) do value
+        p.dirty[:source] = value
+        update!(p)
+    end
 
     apply_layout!(p, p.widget)
 
@@ -38,6 +38,7 @@ end
 
 function unmount!(p::Picture)
     inhibit!(p.catalyst)
+    p.widget = nothing
 end
 
 function update!(p::Picture)

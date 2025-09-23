@@ -20,12 +20,7 @@ mutable struct Button <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        btn = new(text, onclick, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        text isa AbstractReactive && catalyze!(btn.catalyst, text) do value
-            btn.dirty[:text] = value
-            update!(btn) #FIX: Delayed updates
-        end
-        return btn
+        return new(text, onclick, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
 end
 
@@ -36,6 +31,11 @@ function mount!(b::Button, ::AttrapeComponent)
         return
     end
 
+    b.text isa AbstractReactive && catalyze!(b.catalyst, b.text) do value
+        b.dirty[:text] = value
+        update!(b)
+    end
+
     apply_layout!(b, b.widget)
 
     return b.widget
@@ -43,6 +43,7 @@ end
 
 function unmount!(b::Button)
     inhibit!(b.catalyst)
+    b.widget = nothing
 end
 
 function update!(b::Button)

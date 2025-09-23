@@ -13,6 +13,7 @@ mutable struct Slider <: AttrapeComponent
     widget::Union{Mousetrap.Scale, Nothing}
     const catalyst::Catalyst
     const dirty::Dict{Symbol, Any}
+    signal_handler_id::Union{UInt, Nothing}
     function Slider(;
             value::MayBeReactive{Any},
             min::Real=0,
@@ -24,12 +25,7 @@ mutable struct Slider <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        s = new(value, min, max, step, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        value isa AbstractReactive && catalyze!(s.catalyst, value) do v
-            s.dirty[:value] = v
-            update!(s)
-        end
-        return s
+        return new(value, min, max, step, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
     end
 end
 
@@ -40,7 +36,11 @@ function mount!(s::Slider, ::AttrapeComponent)
     Mousetrap.set_value!(s.widget, resolve(s.value)::Real)
 
     if s.value isa AbstractReactive
-        Mousetrap.connect_signal_value_changed!(s.widget) do _
+        catalyze!(s.catalyst, s.value) do v
+            s.dirty[:value] = v
+            update!(s)
+        end
+        s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
             setvalue!(s.value, Mousetrap.get_value(s.widget))
             return
         end
@@ -53,6 +53,11 @@ end
 
 function unmount!(s::Slider)
     inhibit!(s.catalyst)
+    if !isnothing(s.signal_handler_id)
+        Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
+        s.signal_handler_id = nothing
+    end
+    s.widget = nothing
 end
 
 function update!(s::Slider)

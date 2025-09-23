@@ -18,12 +18,7 @@ mutable struct Spinner <: AttrapeComponent
             halign::Union{Symbol, Nothing}=nothing,
             valign::Union{Symbol, Nothing}=nothing
         )
-        sp = new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-        active isa AbstractReactive && catalyze!(sp.catalyst, active) do value
-            sp.dirty[:active] = value
-            update!(sp)
-        end
-        return sp
+        return new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
     end
 end
 
@@ -33,6 +28,11 @@ function mount!(s::Spinner, ::AttrapeComponent)
         Mousetrap.start!(s.widget)
     end
 
+    s.active isa AbstractReactive && catalyze!(s.catalyst, s.active) do value
+        s.dirty[:active] = value
+        update!(s)
+    end
+
     apply_layout!(s, s.widget)
 
     return s.widget
@@ -40,6 +40,7 @@ end
 
 function unmount!(s::Spinner)
     inhibit!(s.catalyst)
+    s.widget = nothing
 end
 
 function update!(s::Spinner)
