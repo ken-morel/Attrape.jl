@@ -1,8 +1,13 @@
-using Mousetrap
-using Attrape
+include("./src/Attrape.jl")
+import Mousetrap
+using .Attrape
 
-main() do app::Application
-    window = Window(app)
-    set_child!(window, Label("Hello World!"))
-    present!(window)
+const Home = PageBuilder() do ctx
+    efus_build"""
+      Label text="YOu did it!"
+    """ |> Page
 end
+
+Application("com.julia.mousetrap") do ctx
+    return Home(ctx)
+end |> run!
