@@ -25,4 +25,6 @@ include("./application.jl")
 
 include("./widgets/widgets.jl")
 
+include("./macros.jl")
+
 end

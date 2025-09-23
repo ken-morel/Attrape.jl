@@ -9,15 +9,12 @@ function callback(_)
     return setvalue!(LabelText, getvalue(LabelText) * "!")
 end
 
-const Home = PageBuilder() do ctx
-    efus_build"""
+
+Application("com.julia.mousetrap") do ctx
+    page"""
       Frame box=V
         Label text=(LabelText')
         Label text=LabelText
         Button text="Click me" onclick=(callback)
-    """ |> Page
-end
-
-Application("com.julia.mousetrap") do ctx
-    return Home(ctx)
+    """
 end |> run!
