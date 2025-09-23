@@ -1,0 +1,51 @@
+export Picture
+
+mutable struct Picture <: AttrapeComponent
+    const source::MayBeReactive{Any}
+    const size::Union{Efus.Size, Nothing}
+    const margin::Union{Efus.Margin, Nothing}
+    const expand::Union{Bool, Nothing}
+    const halign::Union{Symbol, Nothing}
+    const valign::Union{Symbol, Nothing}
+    widget::Union{Mousetrap.Picture, Nothing}
+    const catalyst::Catalyst
+    const dirty::Dict{Symbol, Any}
+    function Picture(;
+            source::MayBeReactive{Any},
+            size::Union{Efus.Size, Nothing}=nothing,
+            margin::Union{Efus.Margin, Nothing}=nothing,
+            expand::Union{Bool, Nothing}=nothing,
+            halign::Union{Symbol, Nothing}=nothing,
+            valign::Union{Symbol, Nothing}=nothing
+        )
+        pic = new(source, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
+        source isa AbstractReactive && catalyze!(pic.catalyst, source) do value
+            pic.dirty[:source] = value
+            update!(pic)
+        end
+        return pic
+    end
+end
+
+function mount!(p::Picture, ::AttrapeComponent)
+    p.widget = Mousetrap.Picture()
+    Mousetrap.set_filename!(p.widget, resolve(p.source)::String)
+
+    apply_layout!(p, p.widget)
+
+    return p.widget
+end
+
+function unmount!(p::Picture)
+    inhibit!(p.catalyst)
+end
+
+function update!(p::Picture)
+    isnothing(p.widget) && return
+    for (dirt, val) in p.dirty
+        if dirt == :source
+            Mousetrap.set_filename!(p.widget, val::String)
+        end
+    end
+    return
+end
