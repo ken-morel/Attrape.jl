@@ -26,8 +26,8 @@ function mount!(s::Switch, p::AttrapeComponent)
             s.dirty[:active] = value
             update!(s)
         end
-        s.signal_handler_id = Mousetrap.connect_signal_switched!(s.widget) do state
-            setvalue!(s.active, state)
+        s.signal_handler_id = Mousetrap.connect_signal_switched!(s.widget) do _
+            setvalue!(s.active, Mousetrap.get_is_active(s.widget))
             return
         end
     end

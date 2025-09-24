@@ -5,7 +5,7 @@ import Efus
 
 ROUTER::Union{Router, Nothing} = nothing
 const text_reactant = Reactant("Reactive Text")
-const slider_value = Reactant(0.0)
+const slider_value = Reactant{Float32}(0.0)
 const switch_active = Reactant(false)
 
 navigate_home(_) = push!(ROUTER, home_page)
@@ -36,7 +36,7 @@ const text_page = page"""
         Navigation
         Label text="Entry (1-line) and Label, reactively linked:"
         Entry text=text_reactant
-        Label text=(text_reactant')
+        Label text=("Computed: " * text_reactant')
         Label text="TextView (multi-line):"
         TextView text="You can type multiple lines here." size=300x100
 """
@@ -52,9 +52,9 @@ const controls_page = page"""
             Spinner active=switch_active
         Box orient=OV margin=5x5
             Label text=(string(slider_value'))
-            Slider value=slider_value range=(0.0:100.0)
+            Slider value=slider_value range=(0.0:0.1:1.0)
             Label text="ProgressBar (reacts to Slider):"
-            ProgressBar fraction=(slider_value')
+            ProgressBar fraction=slider_value
 """
 
 # I am assuming this path exists on a standard Linux system with the Julia icon.

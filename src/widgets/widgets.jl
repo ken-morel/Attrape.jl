@@ -32,6 +32,7 @@ function getchildren(c::AttrapeComponent)
 end
 
 function shaketree(c::AttrapeComponent; direction::Symbol = :top)
+    # println("update ", string(typeof(c)), direction)
     update!(c)
     return if direction == :top
         p = getparent(c)

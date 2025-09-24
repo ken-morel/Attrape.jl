@@ -8,6 +8,8 @@ Base.@kwdef mutable struct Window <: AttrapeComponent
     app::Union{AbstractApplication, Nothing} = nothing
     window::Union{Mousetrap.Window, Nothing} = nothing
 
+    page::Union{Page, Nothing} = nothing
+
     const children::Vector{AbstractComponent} = AttrapeComponent[]
 
     dirty::Dict{Symbol, Any} = Dict()
@@ -33,6 +35,7 @@ function mount!(w::Window, a::AbstractApplication)
     end
     catalyze!(w.catalyst, w.router.current_page) do page
         show(w, page)
+        w.page = page
     end
     if w.title isa AbstractReactive
         catalyze!(w.catalyst, w.title) do v
@@ -41,6 +44,15 @@ function mount!(w::Window, a::AbstractApplication)
         end
     end
     return w.window
+end
+
+function shaketree(w::Window; _...)
+    update!(w)
+    shaketree.(w.children; direction = :bottom)
+    if !isnothing(w.page)
+        shaketree(w.page.component; direction = :bottom)
+    end
+    return
 end
 
 function show(w::Window, p::Page)

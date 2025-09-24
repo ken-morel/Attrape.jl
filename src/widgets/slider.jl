@@ -31,13 +31,13 @@ function mount!(s::Slider, p::AttrapeComponent)
     range = resolve(SliderRange, s.range)
     s.widget = Mousetrap.Scale(first(range), last(range), step(range))
     setbounds!(s, s.widget)
-    Mousetrap.set_value!(s.widget, resolve(Real, s.value))
+    Mousetrap.set_value!(s.widget, Float32(resolve(Real, s.value)))
     if s.value isa AbstractReactive
         catalyze!(s.catalyst, s.value) do v
             s.dirty[:value] = v
             shaketree(s)
         end
-        s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
+        s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do w
             if s.value isa AbstractReactive
                 setvalue!(s.value, Mousetrap.get_value(s.widget))
             end

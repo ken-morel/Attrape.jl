@@ -42,7 +42,7 @@ function update!(pb::ProgressBar)
     isnothing(pb.widget) && return
     for (dirt, val) in pb.dirty
         if dirt == :fraction
-            Mousetrap.set_fraction!(pb.widget, val::Real)
+            Mousetrap.set_fraction!(pb.widget, val)
         end
     end
     empty!(pb.dirty)
