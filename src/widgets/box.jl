@@ -1,9 +1,9 @@
 export Box
 
 Base.@kwdef mutable struct Box <: AttrapeComponent
-    const orient::Mousetrap.Orientation = V
-    const halign::Union{Symbol, Nothing} = nothing
-    const valign::Union{Symbol, Nothing} = nothing
+    const orient::Mousetrap.Orientation = OV
+    const halign::Union{Mousetrap.Alignment, Nothing} = nothing
+    const valign::Union{Mousetrap.Alignment, Nothing} = nothing
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Bool = false

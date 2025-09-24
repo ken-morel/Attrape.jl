@@ -4,12 +4,12 @@ const SliderRange = UnitRange{Real}
 
 Base.@kwdef mutable struct Slider <: AttrapeComponent
     const value::MayBeReactive{Float64}
-    const range::MayBeReactive{SliderRange} = 0.0:100.0
+    const range::MayBeReactive{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}} = 0.0:100.0
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
-    const halign::Union{Symbol, Nothing} = nothing
-    const valign::Union{Symbol, Nothing} = nothing
+    const halign::Union{Mousetrap.Alignment, Nothing} = nothing
+    const valign::Union{Mousetrap.Alignment, Nothing} = nothing
 
     widget::Union{Mousetrap.Scale, Nothing} = nothing
     signal_handler_id::Union{UInt, Nothing} = nothing

@@ -6,8 +6,8 @@ Base.@kwdef mutable struct Button <: AttrapeComponent
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
-    const halign::Union{Symbol, Nothing} = nothing
-    const valign::Union{Symbol, Nothing} = nothing
+    const halign::Union{Mousetrap.Alignment, Nothing} = nothing
+    const valign::Union{Mousetrap.Alignment, Nothing} = nothing
 
     parent::Union{AttrapeComponent, Nothing} = nothing
     widget::Union{Mousetrap.Button, Nothing} = nothing
@@ -47,6 +47,6 @@ function update!(b::Button)
             Mousetrap.set_text!(b.widget, val::String)
         end
     end
-    empty!(s.dirty)
+    empty!(b.dirty)
     return
 end

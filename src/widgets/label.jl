@@ -5,8 +5,8 @@ Base.@kwdef mutable struct Label <: AttrapeComponent
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
-    const halign::Union{Symbol, Nothing} = nothing
-    const valign::Union{Symbol, Nothing} = nothing
+    const halign::Union{Mousetrap.Alignment, Nothing} = nothing
+    const valign::Union{Mousetrap.Alignment, Nothing} = nothing
 
     widget::Union{Mousetrap.Label, Nothing} = nothing
     parent::Union{AttrapeComponent, Nothing} = nothing
