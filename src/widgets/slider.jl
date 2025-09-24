@@ -1,35 +1,26 @@
 export Slider
 
-mutable struct Slider <: AttrapeComponent
-    const value::MayBeReactive{Any}
-    const min::Real
-    const max::Real
-    const step::Real
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Scale, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    signal_handler_id::Union{UInt, Nothing}
-    function Slider(;
-            value::MayBeReactive{Any},
-            min::Real = 0,
-            max::Real = 100,
-            step::Real = 1,
-            size::Union{Efus.Size, Nothing} = nothing,
-            margin::Union{Efus.Size, Nothing} = nothing,
-            expand::Union{Bool, Nothing} = nothing,
-            halign::Union{Symbol, Nothing} = nothing,
-            valign::Union{Symbol, Nothing} = nothing
-        )
-        return new(value, min, max, step, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
-    end
+Base.@kwdef mutable struct Slider <: AttrapeComponent
+    const value::MayBeReactive{Real}
+    const min::Real = 0
+    const max::Real = 100
+    const step::Real = 0.1
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    widget::Union{Mousetrap.Scale, Nothing} = nothing
+    signal_handler_id::Union{UInt, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(s::Slider, ::AttrapeComponent)
+function mount!(s::Slider, p::AttrapeComponent)
+    s.parent = p
     s.widget = Mousetrap.Scale()
     Mousetrap.set_range!(s.widget, s.min, s.max)
     Mousetrap.set_increments!(s.widget, s.step, s.step * 2)
@@ -38,7 +29,7 @@ function mount!(s::Slider, ::AttrapeComponent)
     if s.value isa AbstractReactive
         catalyze!(s.catalyst, s.value) do v
             s.dirty[:value] = v
-            update!(s)
+            shaketree(s)
         end
         s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
             setvalue!(s.value, Mousetrap.get_value(s.widget))
@@ -57,7 +48,9 @@ function unmount!(s::Slider)
         Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
         s.signal_handler_id = nothing
     end
-    return s.widget = nothing
+    s.parent = nothing
+    s.widget = nothing
+    return
 end
 
 function update!(s::Slider)
@@ -69,5 +62,6 @@ function update!(s::Slider)
             end
         end
     end
+    empty!(s.dirty)
     return
 end

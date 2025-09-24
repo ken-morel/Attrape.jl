@@ -1,39 +1,34 @@
 export Entry
 
-mutable struct Entry <: AttrapeComponent
-    const text::MayBeReactive{Any}
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Entry, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    signal_handler_id::Union{UInt, Nothing}
-    function Entry(;
-            text::MayBeReactive{Any},
-            size::Union{Efus.Size, Nothing} = nothing,
-            margin::Union{Efus.Size, Nothing} = nothing,
-            expand::Union{Bool, Nothing} = nothing,
-            halign::Union{Symbol, Nothing} = nothing,
-            valign::Union{Symbol, Nothing} = nothing
-        )
-        return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
-    end
+Base.@kwdef mutable struct Entry <: AttrapeComponent
+    const text::MayBeReactive{AbstractString}
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    widget::Union{Mousetrap.Entry, Nothing} = nothing
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
+    signal_handler_id::Union{UInt, Nothing} = nothing
 end
 
-function mount!(e::Entry, ::AttrapeComponent)
+function mount!(e::Entry, p::AttrapeComponent)
+    e.parent = p
     e.widget = Mousetrap.Entry()
-    Mousetrap.set_text!(e.widget, resolve(e.text)::String)
+    Mousetrap.set_text!(e.widget, resolve(AbstractString, e.text))
 
     if e.text isa AbstractReactive
         catalyze!(e.catalyst, e.text) do value
             e.dirty[:text] = value
-            update!(e)
+            shaketree(b)
         end
         e.signal_handler_id = Mousetrap.connect_signal_changed!(e.widget) do _
             setvalue!(e.text, Mousetrap.get_text(e.widget))
+
             return
         end
     end
@@ -44,12 +39,14 @@ function mount!(e::Entry, ::AttrapeComponent)
 end
 
 function unmount!(e::Entry)
+    e.parent = nothing
     inhibit!(e.catalyst)
     if !isnothing(e.signal_handler_id)
         Mousetrap.disconnect_signal!(e.widget, e.signal_handler_id)
         e.signal_handler_id = nothing
     end
-    return e.widget = nothing
+    e.widget = nothing
+    return
 end
 
 function update!(e::Entry)

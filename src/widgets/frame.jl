@@ -1,18 +1,20 @@
 export Frame
 
-mutable struct Frame <: AttrapeComponent
-    const box::Union{Mousetrap.Orientation, Nothing}
-    widget::Union{Mousetrap.Frame, Nothing}
-    cbox::Union{Mousetrap.Box, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    const children::Vector{<:AbstractComponent}
-    function Frame(; children::Vector{<:AbstractComponent}, box::Union{Mousetrap.Orientation, Nothing})
-        return new(box, nothing, nothing, Catalyst(), Dict(), children)
-    end
+Base.@kwdef mutable struct Frame <: AttrapeComponent
+    const box::Union{Mousetrap.Orientation, Nothing} = nothing
+
+
+    widget::Union{Mousetrap.Frame, Nothing} = nothing
+    cbox::Union{Mousetrap.Box, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
+    const children::Vector{<:AbstractComponent} = AttrapeComponent[]
 end
 
-function mount!(f::Frame, ::AttrapeComponent)
+function mount!(f::Frame, p::AttrapeComponent)
+    f.parent = p
     f.widget = Mousetrap.Frame()
     if !isnothing(f.box)
         f.cbox = Mousetrap.Box(f.box)
@@ -26,6 +28,11 @@ function mount!(f::Frame, ::AttrapeComponent)
     end
 
     return f.widget
+end
+
+function unmount!(f::Frame)
+    unmount!.(f.children)
+    return
 end
 
 function update!(::Frame)

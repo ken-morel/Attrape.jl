@@ -1,34 +1,28 @@
 export ProgressBar
 
-mutable struct ProgressBar <: AttrapeComponent
-    const fraction::MayBeReactive{Any}
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.ProgressBar, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    function ProgressBar(;
-            fraction::MayBeReactive{Any}=0.0,
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Size, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
-        )
-        return new(fraction, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-    end
+Base.@kwdef mutable struct ProgressBar <: AttrapeComponent
+    const fraction::MayBeReactive{Real}
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    widget::Union{Mousetrap.ProgressBar, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(pb::ProgressBar, ::AttrapeComponent)
+function mount!(pb::ProgressBar, p::AttrapeComponent)
+    pb.parent = p
     pb.widget = Mousetrap.ProgressBar()
     Mousetrap.set_fraction!(pb.widget, resolve(pb.fraction)::Real)
 
     pb.fraction isa AbstractReactive && catalyze!(pb.catalyst, pb.fraction) do value
         pb.dirty[:fraction] = value
-        update!(pb)
+        shaketree(pb)
     end
 
     apply_layout!(pb, pb.widget)
@@ -39,6 +33,8 @@ end
 function unmount!(pb::ProgressBar)
     inhibit!(pb.catalyst)
     pb.widget = nothing
+    pb.parent = nothing
+    return
 end
 
 function update!(pb::ProgressBar)

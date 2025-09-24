@@ -1,29 +1,23 @@
 export Switch
 
-mutable struct Switch <: AttrapeComponent
-    const active::MayBeReactive{Any}
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Switch, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    signal_handler_id::Union{UInt, Nothing}
-    function Switch(;
-            active::MayBeReactive{Any}=false,
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Size, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
-        )
-        return new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
-    end
+Base.@kwdef mutable struct Switch <: AttrapeComponent
+    const active::MayBeReactive{Bool}
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    widget::Union{Mousetrap.Switch, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+    signal_handler_id::Union{UInt, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(s::Switch, ::AttrapeComponent)
+function mount!(s::Switch, p::AttrapeComponent)
+    s.parent = p
     s.widget = Mousetrap.Switch()
     Mousetrap.set_active!(s.widget, resolve(s.active)::Bool)
 
@@ -44,12 +38,14 @@ function mount!(s::Switch, ::AttrapeComponent)
 end
 
 function unmount!(s::Switch)
+    s.parent = nothing
     inhibit!(s.catalyst)
     if !isnothing(s.signal_handler_id)
         Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
         s.signal_handler_id = nothing
     end
     s.widget = nothing
+    return
 end
 
 function update!(s::Switch)
@@ -61,5 +57,6 @@ function update!(s::Switch)
             end
         end
     end
+    empty!(s.dirty)
     return
 end

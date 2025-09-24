@@ -1,28 +1,22 @@
 export Spinner
 
-mutable struct Spinner <: AttrapeComponent
-    const active::MayBeReactive{Any}
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Spinner, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    function Spinner(;
-            active::MayBeReactive{Any}=true,
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Size, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
-        )
-        return new(active, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-    end
+Base.@kwdef mutable struct Spinner <: AttrapeComponent
+    const active::MayBeReactive{Bool} = true
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    widget::Union{Mousetrap.Spinner, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(s::Spinner, ::AttrapeComponent)
+function mount!(s::Spinner, p::AttrapeComponent)
+    s.parent = p
     s.widget = Mousetrap.Spinner()
     if resolve(s.active)::Bool
         Mousetrap.start!(s.widget)
@@ -30,7 +24,7 @@ function mount!(s::Spinner, ::AttrapeComponent)
 
     s.active isa AbstractReactive && catalyze!(s.catalyst, s.active) do value
         s.dirty[:active] = value
-        update!(s)
+        shaketree(s)
     end
 
     apply_layout!(s, s.widget)
@@ -40,7 +34,9 @@ end
 
 function unmount!(s::Spinner)
     inhibit!(s.catalyst)
+    s.parent = nothing
     s.widget = nothing
+    return
 end
 
 function update!(s::Spinner)
@@ -54,5 +50,6 @@ function update!(s::Spinner)
             end
         end
     end
+    empty!(s.dirty)
     return
 end

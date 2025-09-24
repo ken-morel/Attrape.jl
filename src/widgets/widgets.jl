@@ -1,3 +1,5 @@
+export getparent, shaketree
+
 include("./layout.jl")
 include("./frame.jl")
 include("./box.jl")
@@ -16,4 +18,30 @@ function mountchildren!(c::AttrapeComponent, w::Any)
         Mousetrap.push_back!(w, mount!(child, c))
     end
     return
+end
+
+function getparent(c::AttrapeComponent)
+    return if :parent ∈ fieldnames(typeof(c))
+        c.parent
+    end
+end
+function getchildren(c::AttrapeComponent)
+    return if :children ∈ fieldnames(typeof(c))
+        c.children
+    end
+end
+
+function shaketree(c::AttrapeComponent; direction::Symbol = :top)
+    update!(c)
+    return if direction == :top
+        p = getparent(c)
+        if isnothing(p)
+            shaketree(p; direction = :bottom)
+        else
+            shaketree(p; direction)
+        end
+    elseif direction == :bottom
+        children = getchildren(c)
+        !isnothing(children) && shaketree.(children; direction == :bottom)
+    end
 end

@@ -1,4 +1,4 @@
-function apply_layout!(component, widget)
+function apply_layout!(component::AttrapeComponent, widget)
     !isnothing(component.size) && Mousetrap.set_size_request!(widget, component.size.width, component.size.height)
     if !isnothing(component.margin)
         Mousetrap.set_margin_top!(widget, component.margin.height)
@@ -8,5 +8,5 @@ function apply_layout!(component, widget)
     end
     !isnothing(component.expand) && Mousetrap.set_expand!(widget, component.expand)
     !isnothing(component.halign) && Mousetrap.set_halign!(widget, getproperty(Mousetrap.Align, component.halign))
-    !isnothing(component.valign) && Mousetrap.set_valign!(widget, getproperty(Mousetrap.Align, component.valign))
+    return !isnothing(component.valign) && Mousetrap.set_valign!(widget, getproperty(Mousetrap.Align, component.valign))
 end

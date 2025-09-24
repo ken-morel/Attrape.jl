@@ -1,49 +1,42 @@
 export Button
 
-mutable struct Button <: AttrapeComponent
-    const text::MayBeReactive{Any}
+Base.@kwdef mutable struct Button <: AttrapeComponent
+    const text::MayBeReactive{AbstractString}
     const onclick::Function
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Button, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    function Button(;
-            text::MayBeReactive{Any},
-            onclick::Function,
-            size::Union{Efus.Size, Nothing} = nothing,
-            margin::Union{Efus.Size, Nothing} = nothing,
-            expand::Union{Bool, Nothing} = nothing,
-            halign::Union{Symbol, Nothing} = nothing,
-            valign::Union{Symbol, Nothing} = nothing
-        )
-        return new(text, onclick, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-    end
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    parent::Union{AttrapeComponent, Nothing} = nothing
+    widget::Union{Mousetrap.Button, Nothing} = nothing
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(b::Button, ::AttrapeComponent)
-    b.widget = Mousetrap.Button(Mousetrap.Label(resolve(b.text)::String))
+function mount!(b::Button, p::AttrapeComponent)
+    b.parent = p
+    b.widget = Mousetrap.Button(Mousetrap.Label(resolve(AbstractString, b.text)))
     Mousetrap.connect_signal_clicked!(b.widget) do _
         b.onclick(b)
+        shaketree(b)
         return
     end
 
     b.text isa AbstractReactive && catalyze!(b.catalyst, b.text) do value
         b.dirty[:text] = value
-        update!(b)
     end
 
     apply_layout!(b, b.widget)
-
     return b.widget
 end
 
 function unmount!(b::Button)
     inhibit!(b.catalyst)
-    return b.widget = nothing
+    b.parent = nothing
+    b.widget = nothing
+    return
 end
 
 function update!(b::Button)

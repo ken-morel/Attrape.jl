@@ -1,33 +1,27 @@
 export Label
 
-mutable struct Label <: AttrapeComponent
-    const text::MayBeReactive{Any}
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Label, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    function Label(;
-            text::MayBeReactive{Any},
-            size::Union{Efus.Size, Nothing}=nothing,
-            margin::Union{Efus.Size, Nothing}=nothing,
-            expand::Union{Bool, Nothing}=nothing,
-            halign::Union{Symbol, Nothing}=nothing,
-            valign::Union{Symbol, Nothing}=nothing
-        )
-        return new(text, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
-    end
+Base.@kwdef mutable struct Label <: AttrapeComponent
+    const text::MayBeReactive{AbstractString}
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Symbol, Nothing} = nothing
+    const valign::Union{Symbol, Nothing} = nothing
+
+    widget::Union{Mousetrap.Label, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(l::Label, ::AttrapeComponent)
-    l.widget = Mousetrap.Label(resolve(l.text)::String)
+function mount!(l::Label, p::AttrapeComponent)
+    l.parent = p
+    l.widget = Mousetrap.Label(resolve(AbstractString, l.text))
 
     l.text isa AbstractReactive && catalyze!(l.catalyst, l.text) do value
         l.dirty[:text] = value
-        update!(l)
+        shaketree(l)
     end
 
     apply_layout!(l, l.widget)
@@ -37,7 +31,9 @@ end
 
 function unmount!(l::Label)
     inhibit!(l.catalyst)
+    l.parent = nothing
     l.widget = nothing
+    return
 end
 
 function update!(l::Label)
