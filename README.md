@@ -1,99 +1,174 @@
 # Attrape.jl
 
-[![][img-stable]][doc-stable] [![][img-dev]][doc-dev]
+In short, Efus.jl defines a simple language, and Attrape.jl
+defines components basing on Mousetrap.jl widgets.
+It also provides you abit more to help you combine
+The power of Mousetrap.jl and Efus.jl.
+If you have not yet, you could have a look at
+[Efus.jl](https://github.com/ken-morel/efus.jl) and
+[Mousetrap.jl](https://gibhub.com/clemapfel/moustrap.jl)
 
-[img-stable]: https://img.shields.io/badge/docs-stable-blue.svg
-[doc-stable]: https://github.com/ken-morel/Attrape.jl
+## Application
 
-[img-dev]: https://img.shields.io/badge/docs-dev-blue.svg
-[doc-dev]: https://github.com/ken-morel/Attrape.jl
-
-[![wakatime](https://wakatime.com/badge/github/ken-morel/Attrape.jl.svg)](https://wakatime.com/badge/github/ken-morel/Attrape.jl)
-
-Attrape.jl is a declarative UI toolkit for Julia, built on top of [Mousetrap.jl](https://github.com/clemapfel/mousetrap.jl) (a Julia wrapper for the GTK-based Mousetrap UI library). It leverages the power of [Efus.jl](https://github.com/ken-morel/Efus.jl) to provide a component-based, declarative syntax for building modern, reactive desktop applications.
-
-## Features
-
-- **Declarative UI:** Define your application's UI using a simple and intuitive syntax, inspired by modern web frameworks.
-- **Reactive Data Binding:** Create dynamic applications with two-way data binding. Changes in your application's state are automatically reflected in the UI, and vice-versa.
-- **Component-Based Architecture:** Build your UI from a rich set of reusable components, including buttons, sliders, text inputs, and more.
-- **Application and Window Management:** Attrape.jl provides a high-level API for managing your application's lifecycle, windows, and navigation.
-- **Extensible:** Easily create your own custom components to suit your application's needs.
-
-## Installation
-
-Attrape.jl is still under active development. To install it, you first need to install its dependencies from their GitHub repositories:
+Attrape wraps arround the actual mousetrap application
+where we have an Application, which stores the Mousetrap app,
+Windows, like the application's `.toplevel`, and
+each window has a `.router`, for navigating and displaying different
+pages.
 
 ```julia
-using Pkg
-Pkg.add(url="https://github.com/ken-morel/Efus.jl")
-Pkg.add(url="https://github.com/ken-morel/Atak.jl")
-Pkg.add(url="https://github.com/ken-morel/Attrape.jl")
+(@main)(_) = Application("com.julia.widget-showcase") do ctx
+    setvalue!(ctx.window.title, "Attrape showcase")
+end |> run!
 ```
 
-## Getting Started
+That's like a short way of doing that.
+The ctx, which will see in several other parts is
+the window context, containing `.window` and `.app`
+attributes.
 
-Here's a simple example of a "Hello, World!" application built with Attrape.jl:
+Attrape creates a first window for you, which you can
+access via the ctx.window.
+The window initializer function you have seen earlier can also
+return a page, if so it will be displayed on the window
+and pushed to the router.
+
+## Components
+
+Attrape defines components which wrap on mousetrap widgets
+Since they are just structs, you can always call them
+directly, or view their help.
 
 ```julia
+using Attrape # Utmost important.
+
+component = efus"""Label text="free!" """
+```
+
+## Router
+
+A router stores a stack of pages,
+it supports `push!`, `pop!` methods which almost immediately
+show on the window. The current page is stored
+in a reactant, and the history in a vector.
+
+## Page
+
+A page simply contains a component which can be
+displayed on a window, or placed in an actual mousetrap
+widget. Like if you want to display a component in
+a frame, you will wrap it in a page, and call `mount!(page, widget)`
+and `unmount!` to emit the destroy signal.
+
+```julia
+# You can either create a page from a component
+const Home = Page(@efus_build"Frame padding=3x2")
+
+# Or use the page macro
+# ctx is already defined
+const Widgets = page"Frame"
+```
+
+## Page Builders
+
+A pagebuilder is a Function wrapper which takes a PageContext(containint
+window and app, like in the app init's funciton)
+and returns a Page.
+
+```julia
+# either call it manually
+const Builder = PageBuilder() do ctx
+  page"Frame"
+end
+
+# or use the macro
+# It creates a closure where ctx is defined
+const Builder = pagebuilder"
+  Label text=(ctx.window.title)
+"
+```
+
+## Composite components
+
+One of the main thing with components, is that
+they can be composed to create bigger ones.
+You can use the Composite structure, a callable
+structure which passes all it's keyword arguments.
+since @efus_str returns a closure, you can use it directly
+for no argument components.
+
+```julia
+# julia --project=. -O0 --compile=min test.jl
+
 using Attrape
-using Efus
-import Mousetrap # It's good practice to import Mousetrap as well
 
-const HelloWorldView = View(
-    efusthrow"""
-    using Attrape
+ROUTER::Union{Router, Nothing} = nothing
+const text_reactant = Reactant("Reactive Text")
+const slider_value = Reactant{Float32}(0.0)
+const switch_active = Reactant(false)
+const text_view = Reactant("You can type multiple lines here:")
 
-    Frame label="A beautiful frame" box=v
-      Label text="Hello world"
-      Label text="Hello world"
+navigate_home(_) = push!(ROUTER, home_page)
+navigate_text(_) = push!(ROUTER, text_page)
+navigate_controls(_) = push!(ROUTER, controls_page)
+
+
+const Navigation = Composite(
+    efus"""
+    Box orient=OH margin=10x10
+       Button text="Home" onclick=navigate_home
+       Button text="Text Widgets" onclick=navigate_text
+       Button text="Controls" onclick=navigate_controls
     """
-) do nmsp, ctx, args
-end
+)
 
-function (@main)(::Vector{String})
-    return run!(
-        application(
-            home = HelloWorldView
-        )
-    )
-end
+const home_page = page"""
+    Box orient=OV margin=10x10
+        Navigation
+        Label text="Welcome to the Widget Showcase!" halign=AC expand=true
+        Label text="Use the navigation on the left to explore the widgets." halign=AC expand=true
+"""
+
+const text_page = page"""
+    Box orient=OV margin=10x10
+        Navigation
+        Label text="Entry (1-line) and Label, reactively linked:"
+        Entry text=text_reactant
+        Label text=("Computed: " * text_reactant')
+        Label text="TextView (multi-line):"
+        TextView text=text_view size=300x100
+        TextView text=(text_view' * " and here too, but without updates :-(") size=300x100
+"""
+
+
+const controls_page = page"""
+    Box orient=OV margin=10x10 expand=true
+        Navigation
+        Box orient=OH margin=5x5
+            Label text="Switch:"
+            Switch active=switch_active
+            Label text="Spinner (reacts to Switch):"
+            Spinner active=switch_active
+        Box orient=OV margin=5x5
+            Label text=(string(slider_value'))
+            Slider value=slider_value range=(0.0:0.1:1.0)
+            Label text="ProgressBar (reacts to Slider):"
+            ProgressBar fraction=slider_value
+"""
+
+Application("com.julia.widget-showcase") do ctx
+    global ROUTER = ctx.window.router
+    setvalue!(ctx.window.title, "Attrape showcase")
+    page"""
+        println
+        Box orient=OH
+            Box orient=OV size=150x0 margin=5x5
+                Button text="Home" onclick=navigate_home
+                Button text="Text Widgets" onclick=navigate_text
+                Button text="Controls" onclick=navigate_controls
+    """
+end |> run!
+
 ```
 
-In this example:
-
-1.  We define a `View` called `HelloWorldView`.
-2.  Inside the `View`, we use the `efusthrow` string macro to define the UI layout using Efus syntax.
-3.  We create a `Frame` with a vertical `Box` layout (`box=v`).
-4.  Inside the `Frame`, we add two `Label` widgets.
-5.  Finally, we create an `application` with `HelloWorldView` as its home page and `run!` it.
-
-## Available Components
-
-Attrape.jl provides a wide range of components to build your application's UI. Here are some of the most common ones:
-
-- `Frame`: A container with an optional label.
-- `Box`: A container that arranges its children horizontally or vertically.
-- `Label`: A widget that displays a small amount of text.
-- `Button`: A clickable button.
-- `ToggleButton`: A button that can be toggled between two states.
-- `CheckButton`: A checkable button.
-- `Switch`: A switch that can be toggled between on and off.
-- `SpinButton`: A button with an entry to display a numeric value.
-- `Scale`: A slider for selecting a value from a range.
-- `ProgressBar`: A widget to indicate progress of an operation.
-- `Spinner`: A widget to indicate that an operation is ongoing.
-- `Entry`: A single-line text entry widget.
-- `TextView`: A multi-line text entry widget.
-- `DropDown`: A dropdown menu for selecting from a list of options.
-- `ImageDisplay`: A widget to display an image.
-
-For more detailed examples, please see the `examples` directory.
-
-## Contributing
-
-Attrape.jl is an open-source project, and contributions are welcome! If you'd like to contribute, please feel free to open an issue or submit a pull request.
-
-## License
-
-Attrape.jl is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+Have fun!

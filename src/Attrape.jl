@@ -6,6 +6,7 @@ using Atak
 using FunctionWrappers: FunctionWrapper
 
 export mount!
+export Mousetrap
 
 export @efus_str, @efus_build_str
 

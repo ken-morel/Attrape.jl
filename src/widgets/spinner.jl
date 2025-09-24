@@ -20,6 +20,8 @@ function mount!(s::Spinner, p::AttrapeComponent)
     s.widget = Mousetrap.Spinner()
     if resolve(Bool, s.active)
         Mousetrap.start!(s.widget)
+    else
+        Mousetrap.stop!(s.widget)
     end
 
     s.active isa AbstractReactive && catalyze!(s.catalyst, s.active) do value
