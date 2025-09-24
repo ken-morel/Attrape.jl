@@ -34,6 +34,7 @@ function unmount!(pb::ProgressBar)
     inhibit!(pb.catalyst)
     pb.widget = nothing
     pb.parent = nothing
+    Mousetrap.emit_signal_destroy(pb.widget)
     return
 end
 

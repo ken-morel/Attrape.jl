@@ -36,6 +36,7 @@ function unmount!(s::Spinner)
     inhibit!(s.catalyst)
     s.parent = nothing
     s.widget = nothing
+    Mousetrap.emit_signal_destroy(s.widget)
     return
 end
 

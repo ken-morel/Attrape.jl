@@ -36,6 +36,7 @@ function unmount!(b::Button)
     inhibit!(b.catalyst)
     b.parent = nothing
     b.widget = nothing
+    Mousetrap.emit_signal_destroy(b.widget)
     return
 end
 

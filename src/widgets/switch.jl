@@ -45,6 +45,7 @@ function unmount!(s::Switch)
         s.signal_handler_id = nothing
     end
     s.widget = nothing
+    Mousetrap.emit_signal_destroy(s.widget)
     return
 end
 

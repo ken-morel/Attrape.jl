@@ -33,6 +33,7 @@ function unmount!(l::Label)
     inhibit!(l.catalyst)
     l.parent = nothing
     l.widget = nothing
+    Mousetrap.emit_signal_destroy(l.widget)
     return
 end
 

@@ -45,6 +45,7 @@ function unmount!(tv::TextView)
         tv.signal_handler_id = nothing
     end
     tv.widget = nothing
+    Mousetrap.emit_signal_destroy(tv.widget)
     return
 end
 

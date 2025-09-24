@@ -62,6 +62,7 @@ function unmount!(s::Slider)
     end
     s.parent = nothing
     s.widget = nothing
+    Mousetrap.emit_signal_destroy(s.widget)
     return
 end
 

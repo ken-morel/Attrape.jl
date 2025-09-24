@@ -29,6 +29,7 @@ function unmount!(b::Box)
     unmount!.(b.children)
     b.parent = nothing
     b.widget = nothing
+    Mousetrap.emit_signal_destroy(b.widget)
     return
 end
 

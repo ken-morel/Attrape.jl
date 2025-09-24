@@ -31,6 +31,7 @@ end
 
 function unmount!(f::Frame)
     unmount!.(f.children)
+    Mousetrap.emit_signal_destroy(f.widget)
     return
 end
 

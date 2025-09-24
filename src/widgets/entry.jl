@@ -45,6 +45,7 @@ function unmount!(e::Entry)
         e.signal_handler_id = nothing
     end
     e.widget = nothing
+    Mousetrap.emit_signal_destroy(e.widget)
     return
 end
 
