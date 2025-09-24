@@ -3,19 +3,37 @@ import Mousetrap
 using .Attrape
 import Efus
 
-ROUTER = nothing
+ROUTER::Union{Router, Nothing} = nothing
 const text_reactant = Reactant("Reactive Text")
 const slider_value = Reactant(0.0)
 const switch_active = Reactant(false)
 
+navigate_home(_) = push!(ROUTER, home_page)
+navigate_text(_) = push!(ROUTER, text_page)
+navigate_controls(_) = push!(ROUTER, controls_page)
+navigate_media(_) = push!(ROUTER, media_page)
+
+
+const Navigation = Composite(
+    efus"""
+    Box orient=OH margin=10x10
+       Button text="Home" onclick=navigate_home
+       Button text="Text Widgets" onclick=navigate_text
+       Button text="Controls" onclick=navigate_controls
+       Button text="Media" onclick=navigate_media
+    """
+)
+
 const home_page = page"""
     Box orient=OV margin=10x10
+        Navigation
         Label text="Welcome to the Widget Showcase!" halign=AC expand=true
         Label text="Use the navigation on the left to explore the widgets." halign=AC expand=true
 """
 
 const text_page = page"""
     Box orient=OV margin=10x10
+        Navigation
         Label text="Entry (1-line) and Label, reactively linked:"
         Entry text=text_reactant
         Label text=(text_reactant')
@@ -26,6 +44,7 @@ const text_page = page"""
 
 const controls_page = page"""
     Box orient=OV margin=10x10 expand=true
+        Navigation
         Box orient=OH margin=5x5
             Label text="Switch:"
             Switch active=switch_active
@@ -42,17 +61,14 @@ const controls_page = page"""
 # If not, the user can change it to a valid image path.
 const media_page = page"""
     Box orient=OV margin=10x10 halign=AC valign=AC expand=true
+        Navigation
         Label text="Picture widget:"
 """
 #Picture source="/usr/share/icons/hicolor/48x48/apps/julia.png" size="48x48"
 
-navigate_home(_) = push!(ROUTER, home_page)
-navigate_text(_) = push!(ROUTER, text_page)
-navigate_controls(_) = push!(ROUTER, controls_page)
-navigate_media(_) = push!(ROUTER, media_page)
-
 Application("com.julia.widget-showcase") do ctx
     global ROUTER = ctx.window.router
+    setvalue!(ctx.window.title, "Attrape showcase")
     page"""
         Box orient=OH
             Box orient=OV size=150x0 margin=5x5

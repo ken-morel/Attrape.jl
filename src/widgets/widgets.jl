@@ -36,7 +36,7 @@ function shaketree(c::AttrapeComponent; direction::Symbol = :top)
     return if direction == :top
         p = getparent(c)
         if isnothing(p)
-            shaketree(p; direction = :bottom)
+            shaketree(c; direction = :bottom)
         else
             shaketree(p; direction)
         end

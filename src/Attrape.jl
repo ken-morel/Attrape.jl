@@ -24,6 +24,7 @@ include("./page.jl")
 include("./application.jl")
 
 include("./widgets/widgets.jl")
+include("./composite.jl")
 
 include("./macros.jl")
 
