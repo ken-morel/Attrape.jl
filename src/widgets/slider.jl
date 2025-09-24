@@ -1,48 +1,53 @@
 export Slider
 
-mutable struct Slider <: AttrapeComponent
-    const value::MayBeReactive{Any}
-    const min::Real
-    const max::Real
-    const step::Real
-    const size::Union{Efus.Size, Nothing}
-    const margin::Union{Efus.Size, Nothing}
-    const expand::Union{Bool, Nothing}
-    const halign::Union{Symbol, Nothing}
-    const valign::Union{Symbol, Nothing}
-    widget::Union{Mousetrap.Scale, Nothing}
-    const catalyst::Catalyst
-    const dirty::Dict{Symbol, Any}
-    signal_handler_id::Union{UInt, Nothing}
-    function Slider(;
-            value::MayBeReactive{Any},
-            min::Real = 0,
-            max::Real = 100,
-            step::Real = 1,
-            size::Union{Efus.Size, Nothing} = nothing,
-            margin::Union{Efus.Size, Nothing} = nothing,
-            expand::Union{Bool, Nothing} = nothing,
-            halign::Union{Symbol, Nothing} = nothing,
-            valign::Union{Symbol, Nothing} = nothing
-        )
-        return new(value, min, max, step, size, margin, expand, halign, valign, nothing, Catalyst(), Dict(), nothing)
-    end
+const SliderRange = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
+
+Base.@kwdef mutable struct Slider <: AttrapeComponent
+    const value::MayBeReactive{Float32}
+    const range::MayBeReactive{SliderRange} = 0.0:100.0
+    const size::Union{Efus.Size, Nothing} = nothing
+    const margin::Union{Efus.Size, Nothing} = nothing
+    const expand::Union{Bool, Nothing} = nothing
+    const halign::Union{Mousetrap.Alignment, Nothing} = nothing
+    const valign::Union{Mousetrap.Alignment, Nothing} = nothing
+
+    widget::Union{Mousetrap.Scale, Nothing} = nothing
+    signal_handler_id::Union{UInt, Nothing} = nothing
+    parent::Union{AttrapeComponent, Nothing} = nothing
+
+    const catalyst::Catalyst = Catalyst()
+    const dirty::Dict{Symbol, Any} = Dict()
 end
 
-function mount!(s::Slider, ::AttrapeComponent)
-    s.widget = Mousetrap.Scale()
-    Mousetrap.set_range!(s.widget, s.min, s.max)
-    Mousetrap.set_increments!(s.widget, s.step, s.step * 2)
-    Mousetrap.set_value!(s.widget, resolve(s.value)::Real)
-
+function setbounds!(c::Slider, s::Mousetrap.Scale)
+    range = resolve(SliderRange, c.range)
+    Mousetrap.set_upper!(s, last(range))
+    Mousetrap.set_lower!(s, first(range))
+    Mousetrap.set_step_increment!(s, last(range))
+    return
+end
+function mount!(s::Slider, p::AttrapeComponent)
+    s.parent = p
+    range = resolve(SliderRange, s.range)
+    s.widget = Mousetrap.Scale(first(range), last(range), step(range))
+    setbounds!(s, s.widget)
+    Mousetrap.set_value!(s.widget, Float32(resolve(Real, s.value)))
     if s.value isa AbstractReactive
         catalyze!(s.catalyst, s.value) do v
             s.dirty[:value] = v
-            update!(s)
+            shaketree(s)
         end
-        s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
-            setvalue!(s.value, Mousetrap.get_value(s.widget))
+        s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do w
+            if s.value isa AbstractReactive
+                setvalue!(s.value, Mousetrap.get_value(s.widget))
+            end
             return
+        end
+    end
+    if s.range isa AbstractReactive
+        catalyze!(s.catalyst, s.range) do v
+            s.dirty[:range] = v
+            shaketree(s)
         end
     end
 
@@ -54,10 +59,13 @@ end
 function unmount!(s::Slider)
     inhibit!(s.catalyst)
     if !isnothing(s.signal_handler_id)
-        Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
+        Mousetrap.disconnect_signal_value_changed!(s.widget)
         s.signal_handler_id = nothing
     end
-    return s.widget = nothing
+    s.parent = nothing
+    s.widget = nothing
+    Mousetrap.emit_signal_destroy(s.widget)
+    return
 end
 
 function update!(s::Slider)
@@ -67,7 +75,10 @@ function update!(s::Slider)
             if Mousetrap.get_value(s.widget) != val
                 Mousetrap.set_value!(s.widget, val::Real)
             end
+        elseif dirt == :range
+            setbounds!(s, s.widget)
         end
     end
+    empty!(s.dirty)
     return
 end

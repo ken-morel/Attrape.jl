@@ -4,8 +4,8 @@
 #     const size::Union{Efus.Size, Nothing}
 #     const margin::Union{Efus.Size, Nothing}
 #     const expand::Union{Bool, Nothing}
-#     const halign::Union{Symbol, Nothing}
-#     const valign::Union{Symbol, Nothing}
+#     const halign::Union{Mousetrap.Alignment, Nothing}
+#     const valign::Union{Mousetrap.Alignment, Nothing}
 #     widget::Union{Mousetrap.Picture, Nothing}
 #     const catalyst::Catalyst
 #     const dirty::Dict{Symbol, Any}
@@ -14,8 +14,8 @@
 #             size::Union{Efus.Size, Nothing} = nothing,
 #             margin::Union{Efus.Size, Nothing} = nothing,
 #             expand::Union{Bool, Nothing} = nothing,
-#             halign::Union{Symbol, Nothing} = nothing,
-#             valign::Union{Symbol, Nothing} = nothing
+#             halign::Union{Mousetrap.Alignment, Nothing} = nothing,
+#             valign::Union{Mousetrap.Alignment, Nothing} = nothing
 #         )
 #         return new(source, size, margin, expand, halign, valign, nothing, Catalyst(), Dict())
 #     end
