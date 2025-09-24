@@ -1,7 +1,7 @@
 export Button
 
 Base.@kwdef mutable struct Button <: AttrapeComponent
-    const text::MayBeReactive{AbstractString}
+    const text::MayBeReactive{String}
     const onclick::Function
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing

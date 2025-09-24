@@ -1,7 +1,7 @@
 export TextView
 
 Base.@kwdef mutable struct TextView <: AttrapeComponent
-    const text::MayBeReactive{<:AbstractString}
+    const text::MayBeReactive{String}
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
