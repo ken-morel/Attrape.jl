@@ -42,6 +42,6 @@ function shaketree(c::AttrapeComponent; direction::Symbol = :top)
         end
     elseif direction == :bottom
         children = getchildren(c)
-        !isnothing(children) && shaketree.(children; direction == :bottom)
+        !isnothing(children) && shaketree.(children; direction = :bottom)
     end
 end

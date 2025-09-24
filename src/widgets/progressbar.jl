@@ -1,7 +1,7 @@
 export ProgressBar
 
 Base.@kwdef mutable struct ProgressBar <: AttrapeComponent
-    const fraction::MayBeReactive{Real}
+    const fraction::MayBeReactive{<:Real}
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing

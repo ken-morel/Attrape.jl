@@ -3,7 +3,6 @@ export Frame
 Base.@kwdef mutable struct Frame <: AttrapeComponent
     const box::Union{Mousetrap.Orientation, Nothing} = nothing
 
-
     widget::Union{Mousetrap.Frame, Nothing} = nothing
     cbox::Union{Mousetrap.Box, Nothing} = nothing
     parent::Union{AttrapeComponent, Nothing} = nothing

@@ -1,7 +1,7 @@
 export Slider
 
 Base.@kwdef mutable struct Slider <: AttrapeComponent
-    const value::MayBeReactive{Real}
+    const value::MayBeReactive{<:Real}
     const min::Real = 0
     const max::Real = 100
     const step::Real = 0.1

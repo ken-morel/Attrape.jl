@@ -1,7 +1,7 @@
 export Entry
 
 Base.@kwdef mutable struct Entry <: AttrapeComponent
-    const text::MayBeReactive{AbstractString}
+    const text::MayBeReactive{<:AbstractString}
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
