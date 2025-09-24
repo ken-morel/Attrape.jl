@@ -27,7 +27,9 @@ function mount!(tv::TextView, p::AttrapeComponent)
             shaketree(tv)
         end
         tv.signal_handler_id = Mousetrap.connect_signal_text_changed!(tv.widget) do _
-            setvalue!(tv.text, Mousetrap.get_text(tv.widget))
+            if tv.text isa AbstractReactive
+                setvalue!(tv.text, Mousetrap.get_text(tv.widget))
+            end
             return
         end
     end

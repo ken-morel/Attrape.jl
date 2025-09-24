@@ -1,10 +1,10 @@
 export Slider
 
-const SliderRange = UnitRange{Real}
+const SliderRange = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
 
 Base.@kwdef mutable struct Slider <: AttrapeComponent
-    const value::MayBeReactive{Float64}
-    const range::MayBeReactive{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}} = 0.0:100.0
+    const value::MayBeReactive{Float32}
+    const range::MayBeReactive{SliderRange} = 0.0:100.0
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
@@ -38,7 +38,9 @@ function mount!(s::Slider, p::AttrapeComponent)
             shaketree(s)
         end
         s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
-            setvalue!(s.value, Mousetrap.get_value(s.widget))
+            if s.value isa AbstractReactive
+                setvalue!(s.value, Mousetrap.get_value(s.widget))
+            end
             return
         end
     end

@@ -19,7 +19,7 @@ end
 function mount!(s::Switch, p::AttrapeComponent)
     s.parent = p
     s.widget = Mousetrap.Switch()
-    Mousetrap.set_is_active!(s.widget, resolve(s.active)::Bool)
+    Mousetrap.set_is_active!(s.widget, resolve(Bool, s.active))
 
     if s.active isa AbstractReactive
         catalyze!(s.catalyst, s.active) do value

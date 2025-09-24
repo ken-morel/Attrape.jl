@@ -24,10 +24,12 @@ function mount!(e::Entry, p::AttrapeComponent)
     if e.text isa AbstractReactive
         catalyze!(e.catalyst, e.text) do value
             e.dirty[:text] = value
-            shaketree(b)
+            shaketree(e)
         end
         e.signal_handler_id = Mousetrap.connect_signal_text_changed!(e.widget) do _
-            setvalue!(e.text, Mousetrap.get_text(e.widget))
+            if e.text isa AbstractReactive
+                setvalue!(e.text, Mousetrap.get_text(e.widget))
+            end
             return
         end
     end
@@ -58,6 +60,6 @@ function update!(e::Entry)
             end
         end
     end
-    empty!(s.dirty)
+    empty!(e.dirty)
     return
 end

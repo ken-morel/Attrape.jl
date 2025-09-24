@@ -18,7 +18,7 @@ end
 function mount!(pb::ProgressBar, p::AttrapeComponent)
     pb.parent = p
     pb.widget = Mousetrap.ProgressBar()
-    Mousetrap.set_fraction!(pb.widget, resolve(pb.fraction)::Real)
+    Mousetrap.set_fraction!(pb.widget, resolve(Real, pb.fraction))
 
     pb.fraction isa AbstractReactive && catalyze!(pb.catalyst, pb.fraction) do value
         pb.dirty[:fraction] = value

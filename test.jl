@@ -51,7 +51,7 @@ const controls_page = page"""
             Label text="Spinner (reacts to Switch):"
             Spinner active=switch_active
         Box orient=OV margin=5x5
-            Label text=(slider_value')
+            Label text=(string(slider_value'))
             Slider value=slider_value range=(0.0:100.0)
             Label text="ProgressBar (reacts to Slider):"
             ProgressBar fraction=(slider_value')
@@ -70,6 +70,7 @@ Application("com.julia.widget-showcase") do ctx
     global ROUTER = ctx.window.router
     setvalue!(ctx.window.title, "Attrape showcase")
     page"""
+        println
         Box orient=OH
             Box orient=OV size=150x0 margin=5x5
                 Button text="Home" onclick=navigate_home
