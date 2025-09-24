@@ -1,7 +1,4 @@
-include("./src/Attrape.jl")
-import Mousetrap
-using .Attrape
-import Efus
+using Attrape
 
 ROUTER::Union{Router, Nothing} = nothing
 const text_reactant = Reactant("Reactive Text")
@@ -12,7 +9,6 @@ const text_view = Reactant("You can type multiple lines here:")
 navigate_home(_) = push!(ROUTER, home_page)
 navigate_text(_) = push!(ROUTER, text_page)
 navigate_controls(_) = push!(ROUTER, controls_page)
-navigate_media(_) = push!(ROUTER, media_page)
 
 
 const Navigation = Composite(
@@ -21,7 +17,6 @@ const Navigation = Composite(
        Button text="Home" onclick=navigate_home
        Button text="Text Widgets" onclick=navigate_text
        Button text="Controls" onclick=navigate_controls
-       Button text="Media" onclick=navigate_media
     """
 )
 
@@ -59,15 +54,6 @@ const controls_page = page"""
             ProgressBar fraction=slider_value
 """
 
-# I am assuming this path exists on a standard Linux system with the Julia icon.
-# If not, the user can change it to a valid image path.
-const media_page = page"""
-    Box orient=OV margin=10x10 halign=AC valign=AC expand=true
-        Navigation
-        Label text="Picture widget:"
-"""
-#Picture source="/usr/share/icons/hicolor/48x48/apps/julia.png" size="48x48"
-
 Application("com.julia.widget-showcase") do ctx
     global ROUTER = ctx.window.router
     setvalue!(ctx.window.title, "Attrape showcase")
@@ -78,6 +64,5 @@ Application("com.julia.widget-showcase") do ctx
                 Button text="Home" onclick=navigate_home
                 Button text="Text Widgets" onclick=navigate_text
                 Button text="Controls" onclick=navigate_controls
-                Button text="Media" onclick=navigate_media
     """
 end |> run!
