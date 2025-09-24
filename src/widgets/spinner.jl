@@ -18,7 +18,7 @@ end
 function mount!(s::Spinner, p::AttrapeComponent)
     s.parent = p
     s.widget = Mousetrap.Spinner()
-    if resolve(s.active)::Bool
+    if resolve(Bool, s.active)
         Mousetrap.start!(s.widget)
     end
 

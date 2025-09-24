@@ -34,7 +34,7 @@ function unmount!(f::Frame)
     return
 end
 
-function update!(::Frame)
-    empty!(s.dirty)
+function update!(f::Frame)
+    empty!(f.dirty)
     return
 end

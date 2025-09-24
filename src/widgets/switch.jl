@@ -19,14 +19,14 @@ end
 function mount!(s::Switch, p::AttrapeComponent)
     s.parent = p
     s.widget = Mousetrap.Switch()
-    Mousetrap.set_active!(s.widget, resolve(s.active)::Bool)
+    Mousetrap.set_is_active!(s.widget, resolve(s.active)::Bool)
 
     if s.active isa AbstractReactive
         catalyze!(s.catalyst, s.active) do value
             s.dirty[:active] = value
             update!(s)
         end
-        s.signal_handler_id = Mousetrap.connect_signal_state_set!(s.widget) do _, state
+        s.signal_handler_id = Mousetrap.connect_signal_switched!(s.widget) do state
             setvalue!(s.active, state)
             return
         end
@@ -41,7 +41,7 @@ function unmount!(s::Switch)
     s.parent = nothing
     inhibit!(s.catalyst)
     if !isnothing(s.signal_handler_id)
-        Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
+        Mousetrap.disconnect_signal_switched!(s.widget)
         s.signal_handler_id = nothing
     end
     s.widget = nothing
@@ -52,8 +52,8 @@ function update!(s::Switch)
     isnothing(s.widget) && return
     for (dirt, val) in s.dirty
         if dirt == :active
-            if Mousetrap.get_active(s.widget) != val
-                Mousetrap.set_active!(s.widget, val::Bool)
+            if Mousetrap.get_is_active(s.widget) != val
+                Mousetrap.set_is_active!(s.widget, val::Bool)
             end
         end
     end

@@ -19,16 +19,15 @@ end
 function mount!(tv::TextView, p::AttrapeComponent)
     tv.parent = p
     tv.widget = Mousetrap.TextView()
-    buffer = Mousetrap.get_buffer(tv.widget)
-    Mousetrap.set_text!(buffer, resolve(tv.text)::String)
+    Mousetrap.set_text!(tv.widget, resolve(String, tv.text))
 
     if tv.text isa AbstractReactive
         catalyze!(tv.catalyst, tv.text) do value
             tv.dirty[:text] = value
             shaketree(tv)
         end
-        tv.signal_handler_id = Mousetrap.connect_signal_changed!(buffer) do _
-            setvalue!(tv.text, Mousetrap.get_text(buffer))
+        tv.signal_handler_id = Mousetrap.connect_signal_text_changed!(tv.widget) do _
+            setvalue!(tv.text, Mousetrap.get_text(tv.widget))
             return
         end
     end
@@ -42,7 +41,7 @@ function unmount!(tv::TextView)
     tv.parent = nothing
     inhibit!(tv.catalyst)
     if !isnothing(tv.signal_handler_id)
-        Mousetrap.disconnect_signal!(tv.widget, tv.signal_handler_id)
+        Mousetrap.disconnect_signal_text_changed!(tv.widget)
         tv.signal_handler_id = nothing
     end
     tv.widget = nothing
@@ -53,9 +52,8 @@ function update!(tv::TextView)
     isnothing(tv.widget) && return
     for (dirt, val) in tv.dirty
         if dirt == :text
-            buffer = Mousetrap.get_buffer(tv.widget)
-            if Mousetrap.get_text(buffer) != val
-                Mousetrap.set_text!(buffer, val::String)
+            if Mousetrap.get_text(tv.widget) != val
+                Mousetrap.set_text!(tv.widget, val::String)
             end
         end
     end

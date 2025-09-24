@@ -26,9 +26,8 @@ function mount!(e::Entry, p::AttrapeComponent)
             e.dirty[:text] = value
             shaketree(b)
         end
-        e.signal_handler_id = Mousetrap.connect_signal_changed!(e.widget) do _
+        e.signal_handler_id = Mousetrap.connect_signal_text_changed!(e.widget) do _
             setvalue!(e.text, Mousetrap.get_text(e.widget))
-
             return
         end
     end
@@ -42,7 +41,7 @@ function unmount!(e::Entry)
     e.parent = nothing
     inhibit!(e.catalyst)
     if !isnothing(e.signal_handler_id)
-        Mousetrap.disconnect_signal!(e.widget, e.signal_handler_id)
+        Mousetrap.connect_signal_text_changed!(e.widget, e.signal_handler_id)
         e.signal_handler_id = nothing
     end
     e.widget = nothing

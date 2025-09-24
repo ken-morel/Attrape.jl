@@ -1,10 +1,10 @@
 export Slider
 
+const SliderRange = UnitRange{Real}
+
 Base.@kwdef mutable struct Slider <: AttrapeComponent
     const value::MayBeReactive{Float64}
-    const min::Real = 0
-    const max::Real = 100
-    const step::Real = 0.1
+    const range::MayBeReactive{SliderRange} = 0.0:100.0
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
@@ -19,13 +19,19 @@ Base.@kwdef mutable struct Slider <: AttrapeComponent
     const dirty::Dict{Symbol, Any} = Dict()
 end
 
+function setbounds!(c::Slider, s::Mousetrap.Scale)
+    range = resolve(SliderRange, c.range)
+    Mousetrap.set_upper!(s, last(range))
+    Mousetrap.set_lower!(s, first(range))
+    Mousetrap.set_step_increment!(s, last(range))
+    return
+end
 function mount!(s::Slider, p::AttrapeComponent)
     s.parent = p
-    s.widget = Mousetrap.Scale()
-    Mousetrap.set_range!(s.widget, s.min, s.max)
-    Mousetrap.set_increments!(s.widget, s.step, s.step * 2)
-    Mousetrap.set_value!(s.widget, resolve(s.value)::Real)
-
+    range = resolve(SliderRange, s.range)
+    s.widget = Mousetrap.Scale(first(range), last(range), step(range))
+    setbounds!(s, s.widget)
+    Mousetrap.set_value!(s.widget, resolve(Real, s.value))
     if s.value isa AbstractReactive
         catalyze!(s.catalyst, s.value) do v
             s.dirty[:value] = v
@@ -34,6 +40,12 @@ function mount!(s::Slider, p::AttrapeComponent)
         s.signal_handler_id = Mousetrap.connect_signal_value_changed!(s.widget) do _
             setvalue!(s.value, Mousetrap.get_value(s.widget))
             return
+        end
+    end
+    if s.range isa AbstractReactive
+        catalyze!(s.catalyst, s.range) do v
+            s.dirty[:range] = v
+            shaketree(s)
         end
     end
 
@@ -45,7 +57,7 @@ end
 function unmount!(s::Slider)
     inhibit!(s.catalyst)
     if !isnothing(s.signal_handler_id)
-        Mousetrap.disconnect_signal!(s.widget, s.signal_handler_id)
+        Mousetrap.disconnect_signal_value_changed!(s.widget)
         s.signal_handler_id = nothing
     end
     s.parent = nothing
@@ -60,6 +72,8 @@ function update!(s::Slider)
             if Mousetrap.get_value(s.widget) != val
                 Mousetrap.set_value!(s.widget, val::Real)
             end
+        elseif dirt == :range
+            setbounds!(s, s.widget)
         end
     end
     empty!(s.dirty)
