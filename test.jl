@@ -7,6 +7,7 @@ ROUTER::Union{Router, Nothing} = nothing
 const text_reactant = Reactant("Reactive Text")
 const slider_value = Reactant{Float32}(0.0)
 const switch_active = Reactant(false)
+const text_view = Reactant("You can type multiple lines here:")
 
 navigate_home(_) = push!(ROUTER, home_page)
 navigate_text(_) = push!(ROUTER, text_page)
@@ -38,7 +39,8 @@ const text_page = page"""
         Entry text=text_reactant
         Label text=("Computed: " * text_reactant')
         Label text="TextView (multi-line):"
-        TextView text="You can type multiple lines here." size=300x100
+        TextView text=text_view size=300x100
+        TextView text=(text_view' * " and here too, but without updates :-(") size=300x100
 """
 
 
