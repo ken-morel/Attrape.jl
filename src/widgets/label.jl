@@ -43,5 +43,6 @@ function update!(l::Label)
             Mousetrap.set_text!(l.widget, val::String)
         end
     end
+    empty!(s.dirty)
     return
 end

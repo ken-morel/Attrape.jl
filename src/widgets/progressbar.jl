@@ -44,5 +44,6 @@ function update!(pb::ProgressBar)
             Mousetrap.set_fraction!(pb.widget, val::Real)
         end
     end
+    empty!(s.dirty)
     return
 end

@@ -58,5 +58,6 @@ function update!(e::Entry)
             end
         end
     end
+    empty!(s.dirty)
     return
 end
