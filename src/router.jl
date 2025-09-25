@@ -1,9 +1,13 @@
 export Page, Router
-export back!, build
+export build
 
 
-struct Page
+struct Page <: AttrapeComponent
     component::AttrapeComponent
+end
+
+function mount!(p::Page)
+    return mount!(p.component, p)
 end
 struct Router <: AbstractRouter
     history::Vector{Page}
@@ -11,14 +15,20 @@ struct Router <: AbstractRouter
     Router() = new([], Reactant{Union{Page, Nothing}}(nothing))
 end
 
-function back!(r::Router)
+function Base.pop!(r::Router)
     return if length(r.history) > 0
-        pop!(r.history)
-        setvalue!(r.current_page, length(r.history) > 0 ? r.history[end] : nothing)
+        if isempty(r.history)
+            setvalue!(r.current_page, nothing)
+        else
+            setvalue!(r.current_page, r.history[end])
+            pop!(r.history)
+        end
     end
 end
 
-function Base.push!(r::Router, p::Page)
-    push!(r.history, p)
+function Base.push!(r::Router, p::Page; replace::Bool = false)
+    if !isnothing(getvalue(r.current_page)) && !replace
+        push!(r.history, getvalue(r.current_page))
+    end
     return setvalue!(r.current_page, p)
 end

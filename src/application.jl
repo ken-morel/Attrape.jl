@@ -10,6 +10,7 @@ Base.@kwdef mutable struct Application <: AbstractApplication
     app::Union{Mousetrap.Application, Nothing} = nothing
     Application(init::Function, id::String) = new(id, init, nothing, nothing)
 end
+getid(a::Application) = a.id
 
 
 function run!(a::Application)

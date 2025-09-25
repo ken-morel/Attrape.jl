@@ -2,7 +2,7 @@ export Button
 
 Base.@kwdef mutable struct Button <: AttrapeComponent
     const text::MayBeReactive{String}
-    const onclick::Function
+    onclick::Union{Function, Nothing} = nothing
     const size::Union{Efus.Size, Nothing} = nothing
     const margin::Union{Efus.Size, Nothing} = nothing
     const expand::Union{Bool, Nothing} = nothing
@@ -19,7 +19,7 @@ function mount!(b::Button, p::AttrapeComponent)
     b.parent = p
     b.widget = Mousetrap.Button(Mousetrap.Label(resolve(AbstractString, b.text)))
     Mousetrap.connect_signal_clicked!(b.widget) do _
-        b.onclick(b)
+        !isnothing(b.onclick) && b.onclick(b)
         shaketree(b)
         return
     end

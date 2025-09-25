@@ -11,14 +11,12 @@ navigate_text(_) = push!(ROUTER, text_page)
 navigate_controls(_) = push!(ROUTER, controls_page)
 
 
-const Navigation = Composite(
-    efus"""
-    Box orient=OH margin=10x10
-       Button text="Home" onclick=navigate_home
-       Button text="Text Widgets" onclick=navigate_text
-       Button text="Controls" onclick=navigate_controls
-    """
-)
+const Navigation = () -> efus"""
+Box orient=OH margin=10x10
+   Button text="Home" onclick=navigate_home
+   Button text="Text Widgets" onclick=navigate_text
+   Button text="Controls" onclick=navigate_controls
+"""
 
 const home_page = page"""
     Box orient=OV margin=10x10
@@ -58,8 +56,8 @@ Application("com.julia.widget-showcase") do ctx
     global ROUTER = ctx.window.router
     setvalue!(ctx.window.title, "Attrape showcase")
     page"""
-        println
         Box orient=OH
+            Navigation
             Box orient=OV size=150x0 margin=5x5
                 Button text="Home" onclick=navigate_home
                 Button text="Text Widgets" onclick=navigate_text
