@@ -1,14 +1,17 @@
 module Attrape
 import Mousetrap
-import Efus: mount!, @efus_str, @efus_build_str
+import Efus: mount!, unmount!, remount!, @efus_str
 using Efus
 using Atak
+using Atak.Store
 using FunctionWrappers: FunctionWrapper
+using BaseDirs
 
 export mount!
 export Mousetrap
+export AbstractComponent, AbstractReactive
 
-export @efus_str, @efus_build_str
+export @efus_str
 
 export Reactant, Reactor, catalyze!, inhibit!, Catalyst
 
@@ -23,9 +26,9 @@ include("./router.jl")
 include("./window.jl")
 include("./page.jl")
 include("./application.jl")
+include("./store.jl")
 
 include("./widgets/widgets.jl")
-include("./composite.jl")
 
 include("./macros.jl")
 
