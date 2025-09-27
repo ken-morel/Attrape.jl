@@ -1,3 +1,8 @@
+> [!WARNING]
+> I stoped working on this in preference to Gtak.jl.
+> this module is not more compatible with efus due to 
+> ongoing ameliorations(but it takes not much to do
+> though)
 # Attrape.jl
 
 In short, Efus.jl defines a simple language, and Attrape.jl
